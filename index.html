@@ -7,7 +7,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Montserrat:wght@300;400;500;600&family=Great+Vibes&family=Noto+Sans+Telugu:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Montserrat:wght@300;400;500;600&family=Great+Vibes&family=Gurajada&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
 
     <style>
@@ -47,14 +47,16 @@
         }
         .mobile-container::-webkit-scrollbar { display: none; }
 
-        /* ENVELOPE */
+        /* ENVELOPE - Full Screen Click Target */
         #envelope-layer {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.95);
             display: flex; justify-content: center; align-items: center;
             z-index: 2000; transition: opacity 1s ease 1.5s;
+            cursor: pointer; /* Indicates clickable */
         }
-        .envelope-wrapper { position: relative; width: 300px; height: 200px; cursor: pointer; perspective: 1000px; }
+        
+        .envelope-wrapper { position: relative; width: 300px; height: 200px; perspective: 1000px; pointer-events: none; /* Let clicks pass through to parent */ }
         .envelope { position: relative; width: 100%; height: 100%; background-color: var(--envelope-color); border-radius: 5px; transform-style: preserve-3d; }
         .flap { position: absolute; width: 0; height: 0; border-style: solid; z-index: 2; }
         .flap.bottom { bottom: 0; border-width: 0 150px 100px 150px; border-color: transparent transparent #7a1f1a transparent; border-radius: 0 0 5px 5px; }
@@ -75,7 +77,26 @@
         .hero { height: 90vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; color: white; position: relative; z-index: 10; }
         .hero-glass { background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(5px); padding: 30px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 10px 30px rgba(0,0,0,0.3); width: 90%; }
         h1 { font-family: 'Great Vibes', cursive; font-size: 3.5rem; margin: 10px 0; line-height: 1.2; text-shadow: 0 2px 10px rgba(0,0,0,0.8); }
-        .telugu-main { font-family: 'Noto Sans Telugu', sans-serif; font-size: 1.2rem; color: #ffdb73; margin-top: -5px; margin-bottom: 20px; text-shadow: 0 2px 5px rgba(0,0,0,0.8); }
+        
+        /* NEW FONT: Gurajada Italic */
+        .telugu-main { 
+            font-family: 'Gurajada', serif; 
+            font-style: italic;
+            font-size: 1.8rem; /* Increased size for readability */
+            color: #ffdb73; margin-top: -5px; margin-bottom: 20px; 
+            text-shadow: 0 2px 5px rgba(0,0,0,0.8); 
+            line-height: 1.3;
+        }
+        
+        .event-telugu { 
+            font-family: 'Gurajada', serif; 
+            font-style: italic;
+            font-size: 1.4rem; 
+            color: #8a6d1c; 
+            font-weight: 400; 
+            display: block; margin-bottom: 8px; 
+        }
+
         .date-display { border-top: 1px solid rgba(255,255,255,0.5); border-bottom: 1px solid rgba(255,255,255,0.5); padding: 15px 20px; margin: 25px 0; font-family: 'Cinzel', serif; font-size: 1.3rem; letter-spacing: 2px; }
         
         .music-btn { position: absolute; top: 25px; right: 25px; width: 45px; height: 45px; border-radius: 50%; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.5); color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 20; backdrop-filter: blur(10px); box-shadow: 0 0 15px rgba(255,255,255,0.2); transition: all 0.3s; }
@@ -96,7 +117,6 @@
         .sub-event-top { display: flex; justify-content: space-between; align-items: flex-start; }
         .event-details { flex-grow: 1; }
         .event-name { font-family: 'Cinzel', serif; font-size: 1.3rem; color: var(--text-dark); font-weight: 700; display: block; }
-        .event-telugu { font-family: 'Noto Sans Telugu', sans-serif; font-size: 1rem; color: #8a6d1c; font-weight: 600; display: block; margin-bottom: 8px; }
         .event-meta { font-size: 0.9rem; color: #555; margin-bottom: 5px; display: flex; align-items: center; gap: 8px; }
         .event-meta i { color: var(--primary-color); }
         
@@ -107,7 +127,7 @@
         .map-container.open { height: 200px; }
         iframe { width: 100%; height: 100%; border: 0; filter: grayscale(10%); }
         
-        .click-hint { font-size: 0.75rem; color: #777; margin-top: 10px; text-align: left; border-left: 3px solid var(--primary-color); padding-left: 8px; }
+        .click-hint { font-size: 0.8rem; color: #777; margin-top: 10px; text-align: left; border-left: 3px solid var(--primary-color); padding-left: 8px; font-family: 'Gurajada', serif; font-style: italic; font-size: 1.2rem; }
         .date-group-card.wedding { border: 2px solid var(--gold); }
         .date-group-card.wedding .date-header { background: #fffcf0; }
         .date-group-card.wedding .event-name { color: var(--primary-color); font-size: 1.5rem; }
@@ -127,15 +147,15 @@
 <body>
 
     <div class="mobile-container">
-        <div id="envelope-layer">
-            <div class="envelope-wrapper" onclick="openEnvelope()">
+        <div id="envelope-layer" onclick="openEnvelope()">
+            <div class="envelope-wrapper">
                 <div class="envelope">
                     <div class="flap top"></div><div class="flap right"></div><div class="flap bottom"></div><div class="flap left"></div>
                     <div class="card-preview"><h2>A & G</h2></div><div class="seal">A&G</div>
                 </div>
                 <div style="position:absolute; bottom:-60px; width:100%; text-align:center; color:white; font-weight:600; letter-spacing:1px; animation: pulse 2s infinite; text-transform: uppercase; font-size: 0.9rem; line-height: 1.6;">
-                    TAP TO OPEN INVITATION<br>
-                    <span style="font-family:'Noto Sans Telugu'; font-weight:400; font-size:0.85rem; color:#ffdb73;">శుభలేఖను తెరవడానికి నొక్కండి</span>
+                    TAP ANYWHERE TO OPEN<br>
+                    <span style="font-family:'Gurajada', serif; font-style:italic; font-size:1.3rem; color:#ffdb73;">శుభలేఖను తెరవడానికి నొక్కండి</span>
                 </div>
             </div>
         </div>
@@ -162,7 +182,7 @@
                 <div class="section-title">Itinerary & Locations</div>
                 <p class="section-subtitle">
                     Tap the map icon for exact location<br>
-                    <span style="font-family:'Noto Sans Telugu'; color:#aaa;">లొకేషన్ కోసం మ్యాప్ ఐకాన్‌పై నొక్కండి</span>
+                    <span style="font-family:'Gurajada', serif; font-style:italic; font-size:1.2rem; color:#aaa;">లొకేషన్ కోసం మ్యాప్ ఐకాన్‌పై నొక్కండి</span>
                 </p>
                 
                 <div id="events-container">
@@ -170,7 +190,7 @@
                 </div>
             </div>
 
-            <div class="footer"><p>Designed for Aiswarya & Goutham</p><p>2026</p></div>
+            <div class="footer"><p>Designed for Venkata & Aiswarya</p><p>2026</p></div>
         </div>
     </div>
 
@@ -222,11 +242,6 @@
                 const eventName = row.eventname;
                 const time = row.time;
                 const location = row.locationname || row.location;
-                
-                // --- MAP FIX: FORCE EMBED FORMAT ---
-                // We construct the link manually using the Location Name.
-                // This bypasses any broken or "Share" links from the sheet.
-                // It uses "maps.google.com" which is safer for embedding than "www.google.com"
                 let safeLocation = encodeURIComponent(location);
                 let mapLink = `https://maps.google.com/maps?q=${safeLocation}&t=&z=13&ie=UTF8&iwloc=&output=embed`;
 
@@ -264,8 +279,7 @@
                             <div class="event-meta"><i class="fas fa-map-marker-alt"></i> ${location}</div>
                             ${attireHTML}
                             <div class="click-hint">
-                                Click map icon for link <br>
-                                <span style="font-family:'Noto Sans Telugu'; color:#8a2a24; font-size:0.75rem;">గూగుల్ మ్యాప్ లింక్ కోసం మ్యాప్ ఐకాన్ పై క్లిక్ చేయండి</span>
+                                <span style="font-family:'Gurajada', serif; font-style:italic; font-size:1.1rem; color:#8a2a24;">గూగుల్ మ్యాప్ లింక్ కోసం మ్యాప్ ఐకాన్ పై క్లిక్ చేయండి</span>
                             </div>
                         </div>
                         <div class="map-toggle-btn" onclick="toggleMap(this)"><i class="fas fa-map-marked-alt"></i></div>
@@ -308,8 +322,14 @@
         }
         ['touchstart', 'click', 'wheel'].forEach(evt => document.addEventListener(evt, () => { hasInteracted = true; clearInterval(autoScrollInterval); }));
 
+        // MUSIC & ENVELOPE LOGIC
+        // We trigger music immediately on openEnvelope because openEnvelope is triggered by a Click now.
         function openEnvelope() {
             clearTimeout(autoOpenTimeout);
+            
+            // Try playing music immediately (User interaction happened)
+            toggleMusic(true);
+
             document.querySelector('.envelope-wrapper').classList.add('open-envelope');
             setTimeout(() => {
                 const layer = document.getElementById('envelope-layer');
@@ -317,7 +337,6 @@
                 setTimeout(() => {
                     layer.style.display = 'none';
                     document.getElementById('main-invite').classList.add('fade-in-content');
-                    toggleMusic(true);
                     setTimeout(startAutoScroll, 800); 
                 }, 1000);
             }, 1200);
@@ -347,9 +366,18 @@
         function toggleMusic(forcePlay = false) {
             const btn = document.getElementById('musicBtn');
             if (forcePlay || !isPlaying) {
-                isPlaying = true; btn.classList.add('playing');
-                if (audio.currentTime < 60) audio.currentTime = 60; 
-                audio.play().catch(e => { isPlaying = false; btn.classList.remove('playing'); });
+                // Ensure audio is ready
+                if (audio.readyState >= 2 || forcePlay) {
+                    if (audio.currentTime < 60) audio.currentTime = 60; 
+                    audio.play().then(() => {
+                        isPlaying = true;
+                        btn.classList.add('playing');
+                    }).catch(e => {
+                        console.log("Autoplay prevented:", e);
+                        isPlaying = false; 
+                        btn.classList.remove('playing');
+                    });
+                }
             } else {
                 isPlaying = false; btn.classList.remove('playing');
                 audio.pause();
