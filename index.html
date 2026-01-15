@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Venkata Sai Goutham & Aiswarya Swetha</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Montserrat:wght@300;400;500;600&family=Great+Vibes&family=Noto+Sans+Telugu:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+
+    <style>
+        :root {
+            --primary-color: #5a1e1e; 
+            --glass-bg: rgba(255, 255, 255, 0.9);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --gold: #d4af37;
+            --text-dark: #1a1a1a;
+            --envelope-color: #9e2b25;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #111;
+            /* Placeholder Background */
+            background-image: url('https://images.unsplash.com/photo-1511285560982-1351cdeb9821?q=80&w=1000&auto=format&fit=crop'); 
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .mobile-container {
+            width: 100%; max-width: 420px; height: 100%;
+            background-color: rgba(0,0,0,0.2);
+            position: relative; overflow-y: auto; overflow-x: hidden;
+            box-shadow: 0 0 50px rgba(0,0,0,0.8);
+            scroll-behavior: smooth; backdrop-filter: blur(4px);
+            -ms-overflow-style: none; scrollbar-width: none;
+        }
+        .mobile-container::-webkit-scrollbar { display: none; }
+
+        /* ENVELOPE */
+        #envelope-layer {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 2000; transition: opacity 1s ease 1.5s;
+        }
+        .envelope-wrapper { position: relative; width: 300px; height: 200px; cursor: pointer; perspective: 1000px; }
+        .envelope { position: relative; width: 100%; height: 100%; background-color: var(--envelope-color); border-radius: 5px; transform-style: preserve-3d; }
+        .flap { position: absolute; width: 0; height: 0; border-style: solid; z-index: 2; }
+        .flap.bottom { bottom: 0; border-width: 0 150px 100px 150px; border-color: transparent transparent #7a1f1a transparent; border-radius: 0 0 5px 5px; }
+        .flap.left { left: 0; border-width: 100px 0 100px 150px; border-color: transparent transparent transparent var(--envelope-color); border-radius: 5px 0 0 5px; }
+        .flap.right { right: 0; border-width: 100px 150px 100px 0; border-color: transparent var(--envelope-color) transparent transparent; border-radius: 0 5px 5px 0; }
+        .flap.top { top: 0; left: 0; border-width: 110px 150px 0 150px; border-color: #8f2620 transparent transparent transparent; transform-origin: top; transition: transform 0.6s ease-in-out, z-index 0.2s 0.6s; z-index: 3; border-radius: 5px 5px 0 0; }
+        .seal { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -40%); width: 65px; height: 65px; background: var(--gold); border-radius: 50%; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4); z-index: 4; display: flex; justify-content: center; align-items: center; color: #7a1f1a; font-family: 'Great Vibes', cursive; font-size: 26px; border: 2px solid #b5922b; transition: opacity 0.4s; }
+        .card-preview { position: absolute; top: 10px; left: 10px; width: 280px; height: 180px; background: white; z-index: 1; transition: transform 1s ease-in-out 0.5s; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 1px solid #ddd; }
+        .card-preview h2 { font-family: 'Great Vibes', cursive; font-size: 28px; color: var(--primary-color); }
+        .open-envelope .flap.top { transform: rotateX(180deg); z-index: 1; }
+        .open-envelope .seal { opacity: 0; pointer-events: none; }
+        .open-envelope .card-preview { transform: translateY(-160px) scale(1.15); z-index: 5; }
+
+        /* CONTENT */
+        #main-invite { opacity: 0; visibility: hidden; transition: opacity 1.5s ease; }
+        .fade-in-content { opacity: 1 !important; visibility: visible !important; }
+
+        .hero { height: 90vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; color: white; position: relative; z-index: 10; }
+        .hero-glass { background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(5px); padding: 30px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 10px 30px rgba(0,0,0,0.3); width: 90%; }
+        h1 { font-family: 'Great Vibes', cursive; font-size: 3.5rem; margin: 10px 0; line-height: 1.2; text-shadow: 0 2px 10px rgba(0,0,0,0.8); }
+        .telugu-main { font-family: 'Noto Sans Telugu', sans-serif; font-size: 1.2rem; color: #ffdb73; margin-top: -5px; margin-bottom: 20px; text-shadow: 0 2px 5px rgba(0,0,0,0.8); }
+        .date-display { border-top: 1px solid rgba(255,255,255,0.5); border-bottom: 1px solid rgba(255,255,255,0.5); padding: 15px 20px; margin: 25px 0; font-family: 'Cinzel', serif; font-size: 1.3rem; letter-spacing: 2px; }
+        
+        .music-btn { position: absolute; top: 25px; right: 25px; width: 45px; height: 45px; border-radius: 50%; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.5); color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 20; backdrop-filter: blur(10px); box-shadow: 0 0 15px rgba(255,255,255,0.2); transition: all 0.3s; }
+        .music-btn.playing { background: rgba(212, 175, 55, 0.9); color: #000; border-color: var(--gold); animation: spin 4s linear infinite; }
+
+        .section { padding: 40px 15px; text-align: center; background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.8) 10%); }
+        .section-title { font-family: 'Cinzel', serif; color: #fffcf0; font-size: 2rem; margin-bottom: 5px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+        .section-subtitle { font-family: 'Montserrat', sans-serif; color: #ccc; font-size: 0.8rem; margin-bottom: 30px; line-height: 1.4; }
+
+        .date-group-card { background: var(--glass-bg); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid var(--glass-border); border-radius: 16px; margin-bottom: 30px; overflow: hidden; text-align: left; box-shadow: 0 15px 35px rgba(0,0,0,0.2); opacity: 0; transform: translateY(30px); transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .date-group-card.visible { opacity: 1; transform: translateY(0); }
+        .date-header { background: rgba(230, 230, 230, 0.5); padding: 15px 20px; border-bottom: 1px solid rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
+        .date-text { font-family: 'Cinzel', serif; font-size: 1.1rem; color: #333; font-weight: 700; }
+        .weekday-badge { background: var(--primary-color); color: white; padding: 4px 10px; border-radius: 12px; font-size: 0.7rem; text-transform: uppercase; }
+        
+        .sub-event { padding: 20px; border-bottom: 1px solid rgba(0,0,0,0.05); position: relative; }
+        .sub-event:last-child { border-bottom: none; }
+        .sub-event-top { display: flex; justify-content: space-between; align-items: flex-start; }
+        .event-details { flex-grow: 1; }
+        .event-name { font-family: 'Cinzel', serif; font-size: 1.3rem; color: var(--text-dark); font-weight: 700; display: block; }
+        .event-telugu { font-family: 'Noto Sans Telugu', sans-serif; font-size: 1rem; color: #8a6d1c; font-weight: 600; display: block; margin-bottom: 8px; }
+        .event-meta { font-size: 0.9rem; color: #555; margin-bottom: 5px; display: flex; align-items: center; gap: 8px; }
+        .event-meta i { color: var(--primary-color); }
+        
+        .map-toggle-btn { background: white; border: 1px solid #ddd; width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: var(--primary-color); cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: all 0.3s; margin-left: 10px; }
+        .map-toggle-btn:active { transform: scale(0.9); background: #eee; }
+        
+        .map-container { height: 0; overflow: hidden; transition: height 0.4s ease; background: #eee; margin-top: 10px; border-radius: 8px; }
+        .map-container.open { height: 200px; }
+        iframe { width: 100%; height: 100%; border: 0; filter: grayscale(10%); }
+        
+        .click-hint { font-size: 0.75rem; color: #777; margin-top: 10px; text-align: left; border-left: 3px solid var(--primary-color); padding-left: 8px; }
+        .date-group-card.wedding { border: 2px solid var(--gold); }
+        .date-group-card.wedding .date-header { background: #fffcf0; }
+        .date-group-card.wedding .event-name { color: var(--primary-color); font-size: 1.5rem; }
+
+        .countdown-container { display: flex; justify-content: center; gap: 10px; margin-top: 25px; }
+        .cd-box { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); padding: 12px 8px; border-radius: 12px; min-width: 60px; }
+        .cd-number { font-size: 1.4rem; font-weight: 700; color: #fff; display: block; font-family: 'Cinzel', serif; }
+        .cd-label { font-size: 0.6rem; text-transform: uppercase; color: #ddd; margin-top: 5px; }
+        
+        .footer { background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); padding: 40px 20px; color: #888; font-size: 0.8rem; margin-bottom: 0; text-align: center; }
+        #loader { text-align: center; color: white; padding: 20px; font-family: 'Montserrat'; font-size: 0.9rem; }
+        
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.8; } }
+    </style>
+</head>
+<body>
+
+    <div class="mobile-container">
+        <div id="envelope-layer">
+            <div class="envelope-wrapper" onclick="openEnvelope()">
+                <div class="envelope">
+                    <div class="flap top"></div><div class="flap right"></div><div class="flap bottom"></div><div class="flap left"></div>
+                    <div class="card-preview"><h2>A & G</h2></div><div class="seal">A&G</div>
+                </div>
+                <div style="position:absolute; bottom:-60px; width:100%; text-align:center; color:white; font-weight:600; letter-spacing:1px; animation: pulse 2s infinite; text-transform: uppercase; font-size: 0.9rem; line-height: 1.6;">
+                    TAP TO OPEN INVITATION<br>
+                    <span style="font-family:'Noto Sans Telugu'; font-weight:400; font-size:0.85rem; color:#ffdb73;">శుభలేఖను తెరవడానికి నొక్కండి</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="main-invite">
+            <div class="hero">
+                <div class="music-btn" id="musicBtn" onclick="toggleMusic()"><i class="fas fa-music"></i></div>
+                <div class="hero-glass">
+                    <p style="font-size: 0.9rem; letter-spacing: 3px; margin-bottom: 15px; text-transform: uppercase;">Subhalekha</p>
+                    <h1>Venkata Sai Goutham <br>&<br> Aiswarya Swetha</h1>
+                    <div class="telugu-main">వెంకట సాయి గౌతమ్ & ఐశ్వర్య శ్వేత</div>
+                    <div class="date-display">FEBRUARY 25, 2026</div>
+                    <p style="font-size: 1rem; font-weight: 300;">Hyderabad, Telangana</p>
+                    <div class="countdown-container">
+                        <div class="cd-box"><span class="cd-number" id="days">00</span><span class="cd-label">Days</span></div>
+                        <div class="cd-box"><span class="cd-number" id="hours">00</span><span class="cd-label">Hrs</span></div>
+                        <div class="cd-box"><span class="cd-number" id="mins">00</span><span class="cd-label">Min</span></div>
+                        <div class="cd-box"><span class="cd-number" id="secs">00</span><span class="cd-label">Sec</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">Itinerary & Locations</div>
+                <p class="section-subtitle">
+                    Tap the map icon for exact location<br>
+                    <span style="font-family:'Noto Sans Telugu'; color:#aaa;">లొకేషన్ కోసం మ్యాప్ ఐకాన్‌పై నొక్కండి</span>
+                </p>
+                
+                <div id="events-container">
+                    <div id="loader">Loading Schedule...<br>(Fetching from Google Sheet)</div>
+                </div>
+            </div>
+
+            <div class="footer"><p>Designed for Aiswarya & Goutham</p><p>2026</p></div>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. CONFIGURATION ---
+        const RAW_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR-0_JwNP5TLQgQM3P6oWpzB8cgb2VrbYOB_Hf1bHu1twH-1bVPNQxNY3-vf8nUuoLXr1J7TXhtB2QG/pub?output=csv';
+        const SHEET_URL = 'https://corsproxy.io/?' + encodeURIComponent(RAW_SHEET_URL);
+
+        // --- 2. FETCH AND RENDER DATA ---
+        window.addEventListener('DOMContentLoaded', () => {
+            Papa.parse(SHEET_URL, {
+                download: true,
+                header: true,
+                transformHeader: function(h) { return h.trim().replace(/\s/g, '').toLowerCase(); },
+                complete: function(results) {
+                    if (!results.data || results.data.length === 0) {
+                        document.getElementById('loader').innerText = "Sheet is empty or private.";
+                        return;
+                    }
+                    renderEvents(results.data);
+                },
+                error: function(err) {
+                    console.error("Error loading Sheet", err);
+                    document.getElementById('loader').innerHTML = "Failed to load schedule.<br>Checking connection...";
+                    fallbackFetch(); // Try standard fetch if proxy fails
+                }
+            });
+        });
+
+        function fallbackFetch() {
+            Papa.parse(RAW_SHEET_URL, {
+                download: true, header: true,
+                transformHeader: function(h) { return h.trim().replace(/\s/g, '').toLowerCase(); },
+                complete: function(results) { renderEvents(results.data); },
+                error: function() { document.getElementById('loader').innerText = "Could not load data."; }
+            });
+        }
+
+        function renderEvents(data) {
+            const container = document.getElementById('events-container');
+            container.innerHTML = ''; 
+            
+            let currentGroupDate = '';
+            let currentGroupEl = null;
+
+            data.forEach(row => {
+                const date = row.date;
+                const weekday = row.weekday;
+                const eventName = row.eventname;
+                const time = row.time;
+                const location = row.locationname || row.location;
+                
+                // --- MAP FIX: FORCE EMBED FORMAT ---
+                // We construct the link manually using the Location Name.
+                // This bypasses any broken or "Share" links from the sheet.
+                // It uses "maps.google.com" which is safer for embedding than "www.google.com"
+                let safeLocation = encodeURIComponent(location);
+                let mapLink = `https://maps.google.com/maps?q=${safeLocation}&t=&z=13&ie=UTF8&iwloc=&output=embed`;
+
+                const isWedding = (row.iswedding || "").toLowerCase() === 'true';
+                const dressCode = row.dresscode;
+                const teluguName = row.teluguname;
+
+                if(!date || !eventName) return;
+
+                if (date !== currentGroupDate) {
+                    currentGroupDate = date;
+                    if (currentGroupEl) container.appendChild(currentGroupEl);
+                    
+                    currentGroupEl = document.createElement('div');
+                    currentGroupEl.className = `date-group-card ${isWedding ? 'wedding' : ''}`;
+                    currentGroupEl.innerHTML = `
+                        <div class="date-header">
+                            <span class="date-text">${date}</span>
+                            <span class="weekday-badge" style="${isWedding ? 'background:var(--gold); color:black;' : ''}">${weekday}</span>
+                        </div>
+                    `;
+                }
+
+                const attireHTML = dressCode ? `<div class="event-meta"><i class="fas fa-tshirt"></i> ${dressCode}</div>` : '';
+                const displayTelugu = teluguName || translateFallback(eventName); 
+
+                const subEvent = document.createElement('div');
+                subEvent.className = 'sub-event';
+                subEvent.innerHTML = `
+                    <div class="sub-event-top">
+                        <div class="event-details">
+                            <span class="event-name">${eventName}</span>
+                            <span class="event-telugu">${displayTelugu}</span>
+                            <div class="event-meta"><i class="far fa-clock"></i> ${time}</div>
+                            <div class="event-meta"><i class="fas fa-map-marker-alt"></i> ${location}</div>
+                            ${attireHTML}
+                            <div class="click-hint">
+                                Click map icon for link <br>
+                                <span style="font-family:'Noto Sans Telugu'; color:#8a2a24; font-size:0.75rem;">గూగుల్ మ్యాప్ లింక్ కోసం మ్యాప్ ఐకాన్ పై క్లిక్ చేయండి</span>
+                            </div>
+                        </div>
+                        <div class="map-toggle-btn" onclick="toggleMap(this)"><i class="fas fa-map-marked-alt"></i></div>
+                    </div>
+                    <div class="map-container">
+                        <iframe loading="lazy" src="${mapLink}"></iframe>
+                    </div>
+                `;
+                currentGroupEl.appendChild(subEvent);
+            });
+
+            if (currentGroupEl) container.appendChild(currentGroupEl);
+            document.querySelectorAll('.date-group-card').forEach(tile => observer.observe(tile));
+        }
+
+        function translateFallback(english) {
+            const dict = {
+                "PelliKuthuru": "పెళ్లికూతురు", "PelliKoduku": "పెళ్లికొడుకు", "Mehendi": "మెహందీ",
+                "Haldi": "హల్దీ", "Haldi Ceremony": "హల్దీ", "Sangeeth": "సంగీత్",
+                "The Wedding": "సుముహూర్తం", "Wedding": "సుముహూర్తం",
+                "Bride Welcome": "గృహప్రవేశం", "Satyanarana Vratam": "సత్యనారాయణ స్వామి వ్రతం",
+                "Reception": "రిసెప్షన్"
+            };
+            return dict[english] || dict[Object.keys(dict).find(k => english.includes(k))] || "";
+        }
+
+        let autoOpenTimeout, autoScrollInterval, hasInteracted = false;
+        window.addEventListener('load', () => {
+            autoOpenTimeout = setTimeout(() => { if (!hasInteracted) openEnvelope(); }, 2000);
+        });
+        function startAutoScroll() {
+            const container = document.querySelector('.mobile-container');
+            let scrollSpeed = 2; 
+            autoScrollInterval = setInterval(() => {
+                if (hasInteracted) { clearInterval(autoScrollInterval); return; }
+                if (container.scrollTop < (container.scrollHeight - container.clientHeight)) {
+                    container.scrollTop += scrollSpeed;
+                } else { clearInterval(autoScrollInterval); }
+            }, 30);
+        }
+        ['touchstart', 'click', 'wheel'].forEach(evt => document.addEventListener(evt, () => { hasInteracted = true; clearInterval(autoScrollInterval); }));
+
+        function openEnvelope() {
+            clearTimeout(autoOpenTimeout);
+            document.querySelector('.envelope-wrapper').classList.add('open-envelope');
+            setTimeout(() => {
+                const layer = document.getElementById('envelope-layer');
+                layer.style.opacity = '0';
+                setTimeout(() => {
+                    layer.style.display = 'none';
+                    document.getElementById('main-invite').classList.add('fade-in-content');
+                    toggleMusic(true);
+                    setTimeout(startAutoScroll, 800); 
+                }, 1000);
+            }, 1200);
+        }
+
+        function toggleMap(btn) {
+            const mapContainer = btn.parentElement.nextElementSibling;
+            mapContainer.classList.toggle('open');
+            if(mapContainer.classList.contains('open')) {
+                setTimeout(() => { mapContainer.scrollIntoView({behavior: "smooth", block: "center"}); }, 200);
+            }
+        }
+
+        const weddingDate = new Date('February 25, 2026 22:30:00').getTime();
+        const timer = setInterval(function() {
+            const now = new Date().getTime();
+            const distance = weddingDate - now;
+            if (distance < 0) { clearInterval(timer); return; }
+            document.getElementById("days").innerText = Math.floor(distance / (1000 * 60 * 60 * 24));
+            document.getElementById("hours").innerText = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            document.getElementById("mins").innerText = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            document.getElementById("secs").innerText = Math.floor((distance % (1000 * 60)) / 1000);
+        }, 1000);
+
+        var audio = new Audio('assets/song.mp3'); 
+        let isPlaying = false;
+        function toggleMusic(forcePlay = false) {
+            const btn = document.getElementById('musicBtn');
+            if (forcePlay || !isPlaying) {
+                isPlaying = true; btn.classList.add('playing');
+                if (audio.currentTime < 60) audio.currentTime = 60; 
+                audio.play().catch(e => { isPlaying = false; btn.classList.remove('playing'); });
+            } else {
+                isPlaying = false; btn.classList.remove('playing');
+                audio.pause();
+            }
+        }
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+        }, { threshold: 0.1 });
+    </script>
+</body>
+</html>
