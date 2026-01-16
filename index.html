@@ -298,8 +298,10 @@
         .date-header { 
             padding: 15px 20px; 
             background: var(--date-strip-bg); 
-            display: flex; justify-content: space-between; align-items: center; 
-            font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 1.4rem; color: var(--text-brown);
+            display: flex; justify-content: center; align-items: center; 
+            font-family: 'Montserrat', sans-serif; 
+            font-weight: 400; /* Removed Bold */
+            font-size: 1.4rem; color: var(--text-brown);
             border-bottom: 1px solid var(--card-border);
         }
         .wedding .date-header { background: rgba(255, 228, 181, 0.85); color: var(--maroon); }
@@ -435,7 +437,8 @@
             opened = true;
             clearTimeout(autoTimer);
 
-            toggleMusic(!isAuto, isAuto);
+            // FORCE AUTO PLAY: We pass true to force it
+            toggleMusic(true, false);
 
             document.getElementById('scroll').classList.add('open-state');
             document.getElementById('tapHint').style.opacity = '0';
@@ -472,12 +475,14 @@
 
         function toggleMusic(forcePlay, silentMode) {
             const btn = document.getElementById('musicBtn');
+            // If forcing play OR toggling from off to on
             if(forcePlay || (!isPlaying && arguments.length === 0)) {
                 if(audio.currentTime < 60) audio.currentTime = 60;
                 audio.play().then(() => {
                     isPlaying = true; btn.classList.add('playing');
                 }).catch(e => {
-                    if(!silentMode) console.log("Audio blocked");
+                    // Browser blocked auto-play
+                    if(!silentMode) console.log("Audio blocked by browser policy");
                     isPlaying = false; btn.classList.remove('playing');
                 });
             } else {
@@ -486,7 +491,7 @@
         }
 
         function initAutoScroll() {
-            let speed = 1;
+            let speed = 2;
             const scrollInt = setInterval(() => {
                 if(window.scrollY + window.innerHeight >= document.body.offsetHeight) clearInterval(scrollInt);
                 window.scrollBy(0, speed);
@@ -525,21 +530,14 @@
                 
                 let mapHtml = '';
                 
-                // MAP LOGIC:
-                // 1. Check if user pasted full HTML code (<iframe src="...">)
-                // 2. Check if user pasted just a direct URL (http...)
-                // 3. Fallback: Generate a search map using Location Name
-                
                 if(row.maplink && row.maplink.trim() !== '') {
                     if(row.maplink.includes('<iframe')) {
-                        // User pasted the full embed code - use it directly
-                        mapHtml = row.maplink;
+                        mapHtml = row.maplink; 
                     } else {
-                        // User pasted a URL - wrap it in iframe
-                        mapHtml = `<iframe loading="lazy" src="${row.maplink}"></iframe>`;
+                        mapHtml = `<iframe loading="lazy" src="${row.maplink}"></iframe>`; 
                     }
-                } else {
-                    // Fallback to Search Embed
+                } 
+                else {
                     let loc = row.locationname || row.location;
                     if(loc) {
                         let safeLoc = encodeURIComponent(loc);
@@ -558,10 +556,10 @@
                     
                     groupDiv.style.backgroundImage = `url('assets/card_bg_${dateCount}.png')`;
                     
-                    // Format Date Fancy
                     let displayDate = formatDateFancy(row.date);
                     
-                    groupDiv.innerHTML = `<div class="date-header"><span>${displayDate}</span><span>${row.weekday}</span></div>`;
+                    // Header Updated: No Bold, No Weekday
+                    groupDiv.innerHTML = `<div class="date-header"><span>${displayDate}</span></div>`;
                 }
 
                 const te = row.teluguname || translate(row.eventname);
