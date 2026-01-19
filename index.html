@@ -112,7 +112,8 @@
         .scene { position: absolute; bottom: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 1s ease-in-out; display: flex; justify-content: space-between; align-items: flex-end; padding: 0; }
         .scene.active { opacity: 1; }
 
-        .elephant, .person { position: absolute; bottom: 0; height: 240px; width: auto; filter: drop-shadow(5px 5px 10px rgba(0,0,0,0.6)); transition: all 1.5s ease-out; object-fit: contain; }
+        .elephant, .person { position: absolute; bottom: 0; height: 240px; width: auto; filter: drop-shadow(5px 5px 10px rgba(0,0,0,0.6)); transition: all 1.5s ease-out; object-fit: contain; /* ADD THIS LINE: */
+            image-orientation: from-image;}
         
         .scene-elephants .elephant { bottom: -10px; transition: opacity 1s ease; }
         .scene-elephants .left { transform: scaleX(-1); }
