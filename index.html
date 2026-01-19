@@ -112,8 +112,7 @@
         .scene { position: absolute; bottom: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 1s ease-in-out; display: flex; justify-content: space-between; align-items: flex-end; padding: 0; }
         .scene.active { opacity: 1; }
 
-        .elephant, .person { position: absolute; bottom: 0; height: 240px; width: auto; filter: drop-shadow(5px 5px 10px rgba(0,0,0,0.6)); transition: all 1.5s ease-out; object-fit: contain; /* ADD THIS LINE: */
-            image-orientation: from-image;}
+        .elephant, .person { position: absolute; bottom: 0; height: 240px; width: auto; filter: drop-shadow(5px 5px 10px rgba(0,0,0,0.6)); transition: all 1.5s ease-out; object-fit: contain;}
         
         .scene-elephants .elephant { bottom: -10px; transition: opacity 1s ease; }
         .scene-elephants .left { transform: scaleX(-1); }
@@ -131,8 +130,8 @@
         /* Reduce size */
         .scene-entry .person { height: 160px !important; }
         /* Position further back towards edges (negative values pull them outward) */
-        .scene-entry.active .person.left { left: -100px; opacity: 1; }
-        .scene-entry.active .person.right { right: -100px; opacity: 1; }
+        .scene-entry.active .person.left { left: 0px; opacity: 1; }
+        .scene-entry.active .person.right { right: 0px; opacity: 1; }
 
         .scene-wedding .person { bottom: 10px; } 
 
@@ -144,7 +143,7 @@
             .scene-entry .person { height: 110px !important; }
             /* Mobile Position Adjusted */
             .scene-entry.active .person.left { left: -40px; }
-            .scene-entry.active .person.right { right: -40px; }
+            .scene-entry.active .person.right { right: 0px; }
             
             .scene-haldi.active .person.left, .scene-wedding.active .person.left, .scene-reception.active .person.left, .scene-thankyou.active .person.left { left: 0px; }
             .scene-haldi.active .person.right, .scene-wedding.active .person.right, .scene-reception.active .person.right, .scene-thankyou.active .person.right { right: 0px; }
