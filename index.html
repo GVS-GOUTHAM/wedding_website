@@ -14,417 +14,470 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
 
     <style>
-        :root {
-            --gold: #d4af37;
-            --gold-dark: #b8860b;
-            --brown-wood: #4e342e;
-            --brown-dark: #2d1e1a;
-            --maroon: #800000;
-            --text-brown: #2c1810; 
-            --parchment: #fffbf0;
-            --card-border: #e6ccb2;
-            --date-strip-bg: rgba(250, 235, 215, 0.7); 
-            
-            --script-font: 'Pinyon Script', cursive; 
+        /* --- CUSTOM FONT: SUGUNA --- */
+        @font-face {
+            font-family: 'Suguna';
+            src: url('assets/suguna.ttf') format('truetype');
+            font-weight: normal; font-style: normal;
         }
 
-        /* --- UNCOMMENT THIS IF YOU HAVE THE LOCAL FONT FILE --- */
-        /* @font-face {
-            font-family: 'Dreamland';
-            src: url('assets/dreamland.ttf') format('truetype');
-        }
         :root {
-            --script-font: 'Dreamland', sans-serif;
+            /* --- GLOBAL DARK THEME (Backgrounds) --- */
+            --gold: #d4af37; 
+            --gold-dark: #b8860b;
+            --brown-wood: #4e342e; 
+            --brown-dark: #2d1e1a;
+            --maroon: #800000; 
+            --parchment: #fffbf0; 
+            
+            /* --- CARD SPECIFIC THEME (Invitation Content) --- */
+            --card-text: #4a2c2a; /* Warm chocolate brown for text inside cards */
+            --card-border: #d4af37; /* Gold border for cards */
+            --date-strip-bg: rgba(250, 235, 215, 0.95); 
+            
+            --script-font: 'Pinyon Script', cursive; 
+            --telugu-font: 'Suguna', 'Gurajada', serif;
         }
-        */
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
             margin: 0; padding: 0;
             font-family: 'Montserrat', sans-serif;
-            background-color: #000;
+            background-color: #000; 
             background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('assets/background.jpg'); 
             background-size: cover; background-position: center; background-attachment: fixed;
-            color: var(--text-brown); min-height: 100vh; overflow-x: hidden;
+            color: var(--card-text); min-height: 100vh; overflow-x: hidden;
         }
 
-        /* --- 1. THE SCROLL OPENING LAYER --- */
-        #opening-layer {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 5, 5, 0.98); 
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            z-index: 9999; transition: opacity 1s ease 1s; cursor: pointer;
-            overflow: hidden; 
-        }
+        /* --- 1. OPENING LAYER --- */
+        #opening-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 5, 5, 0.98); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; transition: opacity 1s ease 1s; cursor: pointer; overflow: hidden; }
+        #story-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('assets/story_background.png'); background-size: cover; background-position: center; opacity: 0.2; z-index: 0; pointer-events: none; animation: breathe 10s infinite; }
+        @keyframes breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
 
-        /* --- EASTER EGG LAYER --- */
-        #story-layer {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url('assets/story_background.png');
-            background-size: cover; 
-            background-position: center;
-            background-repeat: no-repeat;
-            opacity: 0.2; 
-            z-index: 0; 
-            pointer-events: none;
-            animation: breathe 10s ease-in-out infinite;
-        }
-
-        @keyframes breathe {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        .scroll-container {
-            position: relative; width: 320px; height: 50px;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            z-index: 10; 
-        }
-
-        .scroll-roller {
-            position: absolute; width: 360px; height: 45px;
-            background: linear-gradient(90deg, var(--brown-dark), var(--brown-wood), var(--brown-dark));
-            border-radius: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.7);
-            z-index: 10; display: flex; justify-content: center; align-items: center;
-            border: 1px solid #1a100e;
-            transition: transform 1.2s cubic-bezier(0.45, 0, 0.55, 1);
-        }
-        
-        .scroll-roller::after, .scroll-roller::before {
-            content: ''; position: absolute; top: 5px; width: 15px; height: 33px;
-            background: radial-gradient(circle, var(--gold), var(--gold-dark));
-            border-radius: 3px; border: 1px solid #000;
-        }
+        .scroll-container { position: relative; width: 320px; height: 50px; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; }
+        .scroll-roller { position: absolute; width: 360px; height: 45px; background: linear-gradient(90deg, var(--brown-dark), var(--brown-wood), var(--brown-dark)); border-radius: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.7); z-index: 10; display: flex; justify-content: center; align-items: center; border: 1px solid #1a100e; transition: transform 1.2s cubic-bezier(0.45, 0, 0.55, 1); }
+        .scroll-roller::after, .scroll-roller::before { content: ''; position: absolute; top: 5px; width: 15px; height: 33px; background: radial-gradient(circle, var(--gold), var(--gold-dark)); border-radius: 3px; border: 1px solid #000; }
         .scroll-roller::before { left: 20px; } .scroll-roller::after { right: 20px; }
-        
-        .scroll-roller.top { top: 0; }
-        .scroll-roller.bottom { bottom: 0; }
+        .scroll-roller.top { top: 0; } .scroll-roller.bottom { bottom: 0; }
 
-        /* --- LONG CURLY TASSELS --- */
-        .tassel-string {
-            position: absolute;
-            top: 25px; 
-            width: 4px; 
-            height: 150px; 
-            background: repeating-linear-gradient(45deg, #800000, #800000 5px, #d4af37 5px, #d4af37 10px);
-            z-index: -1; 
-            opacity: 0;
-            transition: opacity 0.5s ease 0.2s, transform 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.2s; 
-            transform-origin: top center;
-            border-radius: 4px;
-            box-shadow: 1px 1px 3px rgba(0,0,0,0.5);
-        }
-
-        .tassel-string.left { left: 40px; transform: rotate(15deg) scaleY(0); }
-        .tassel-string.right { right: 40px; transform: rotate(-15deg) scaleY(0); }
-
-        .tassel-string::after {
-            content: ''; position: absolute; bottom: -20px; left: -6px;
-            width: 16px; height: 25px; 
-            background: conic-gradient(from 180deg at 50% 0%, #800000, #d4af37, #800000);
-            border-radius: 5px 5px 50% 50%;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.6);
-        }
-        
-        .tassel-string::before {
-            content: ''; position: absolute; bottom: 0px; left: -4px;
-            width: 12px; height: 8px;
-            background: #d4af37;
-            border-radius: 4px;
-            z-index: 2;
-        }
-
+        .tassel-string { position: absolute; top: 25px; width: 4px; height: 150px; background: repeating-linear-gradient(45deg, #800000, #800000 5px, #d4af37 5px, #d4af37 10px); z-index: -1; opacity: 0; transition: opacity 0.5s ease 0.2s, transform 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.2s; transform-origin: top center; border-radius: 4px; box-shadow: 1px 1px 3px rgba(0,0,0,0.5); }
+        .tassel-string.left { left: 40px; transform: rotate(15deg) scaleY(0); } .tassel-string.right { right: 40px; transform: rotate(-15deg) scaleY(0); }
+        .tassel-string::after { content: ''; position: absolute; bottom: -20px; left: -6px; width: 16px; height: 25px; background: conic-gradient(from 180deg at 50% 0%, #800000, #d4af37, #800000); border-radius: 5px 5px 50% 50%; box-shadow: 0 4px 6px rgba(0,0,0,0.6); }
+        .tassel-string::before { content: ''; position: absolute; bottom: 0px; left: -4px; width: 12px; height: 8px; background: #d4af37; border-radius: 4px; z-index: 2; }
         .open-state .tassel-string { opacity: 1; transform: rotate(0deg) scaleY(1); }
 
-
-        .scroll-parchment {
-            position: absolute; top: 22px; width: 300px; height: 0;
-            background-color: var(--parchment);
-            background-image: url('https://www.transparenttextures.com/patterns/cream-paper.png');
-            border-left: 2px solid var(--brown-wood); border-right: 2px solid var(--brown-wood);
-            overflow: hidden; z-index: 5;
-            display: flex; justify-content: center; align-items: center;
-            transition: height 1.2s cubic-bezier(0.45, 0, 0.55, 1), top 1.2s cubic-bezier(0.45, 0, 0.55, 1);
+        /* Parchment has Muggu */
+        .scroll-parchment { 
+            position: absolute; top: 22px; width: 300px; height: 0; background-color: var(--parchment); 
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d4af37' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"), url('https://www.transparenttextures.com/patterns/cream-paper.png');
+            border-left: 2px solid var(--brown-wood); border-right: 2px solid var(--brown-wood); overflow: hidden; z-index: 5; display: flex; justify-content: center; align-items: center; transition: height 1.2s cubic-bezier(0.45, 0, 0.55, 1), top 1.2s cubic-bezier(0.45, 0, 0.55, 1); 
         }
+        .scroll-content { opacity: 0; transform: scale(0.9); transition: all 0.8s ease 0.4s; text-align: center; width: 100%; padding: 0px; }
+        .custom-logo { max-width: 300px; max-height: 250px; height: auto; display: block; margin: 0 auto 10px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
+        .scroll-content h2 { font-family: var(--script-font); color: #F7F705; font-size: 3.5rem; margin: 0; }
+        .scroll-content span { font-family: var(--telugu-font); color: var(--gold-dark); font-size: 2.5rem; display: block; margin-top: 10px; }
 
-        .scroll-content {
-            opacity: 0; transform: scale(0.9); transition: all 0.8s ease 0.4s; text-align: center;
-            width: 100%; padding: 20px;
-        }
-        
-        .custom-logo { max-width: 200px; max-height: 200px; height: auto; display: block; margin: 0 auto 10px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
-        
-        .scroll-content h2 { 
-            font-family: var(--script-font);
-            color: var(--maroon); font-size: 3.5rem; margin: 0; 
-        }
-        .scroll-content span { font-family: 'Gurajada'; color: var(--gold-dark); font-size: 1.5rem; display: block; margin-top: 5px;}
-
+        /* Seal Image */
         .scroll-seal {
-            position: absolute; width: 60px; height: 60px; 
-            background: radial-gradient(circle, #b71c1c, #7f0000);
-            border-radius: 50%; border: 2px solid var(--gold);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5); z-index: 20;
+            position: absolute; width: 80px; height: 80px; 
+            z-index: 20;
             display: flex; justify-content: center; align-items: center;
-            font-family: var(--script-font); color: var(--gold); font-size: 1.5rem;
+            transition: all 0.5s ease;
+        }
+        .seal-image { width: 100%; height: auto; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.6)); }
+        
+        .open-state .scroll-roller.top { transform: translateY(-175px); } .open-state .scroll-roller.bottom { transform: translateY(175px); } .open-state .scroll-parchment { height: 350px; top: -153px; } .open-state .scroll-seal { opacity: 0; transform: scale(1.5); pointer-events: none; } .open-state .scroll-content { opacity: 1; transform: scale(1); }
+
+        .tap-hint { position: absolute; bottom: 15%; width: 100%; text-align: center; animation: pulse 2s infinite; transition: opacity 0.5s; z-index: 20; }
+        .tap-hint p { font-family: var(--telugu-font); color: var(--gold); font-size: 1.6rem; margin: 0; } .tap-hint span { font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; color: #ccc; }
+
+        /* --- 2. DECORATIONS --- */
+        #rain-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; display: none; }
+        .flower-petal { position: absolute; top: -20px; width: 14px; height: 14px; border-radius: 0% 100% 0% 100%; box-shadow: 1px 1px 2px rgba(0,0,0,0.1); animation: fall-spin linear forwards; opacity: 0.9; }
+        .flower-petal.marigold { background: linear-gradient(45deg, #ffca28, #fb8c00); } .flower-petal.rose { background: linear-gradient(45deg, #ef5350, #f8bbd0); }
+        @keyframes fall-spin { 0% { transform: translateY(0) rotate(0deg); opacity: 0; } 10% { opacity: 1; } 100% { transform: translateY(110vh) rotate(360deg); opacity: 0.8; } }
+
+        .hanging-decor { position: fixed; top: 0; width: 100%; height: 250px; pointer-events: none; z-index: 5; display: none; }
+        .show-content .hanging-decor { display: block; }
+        .hanging-decor.hidden { transform: translateY(-150%); opacity: 0; }
+
+        .umbrella { position: absolute; top: 0px; width: 250px; height: auto; filter: drop-shadow(2px 5px 8px rgba(0,0,0,0.5)); transform-origin: top center; animation: swing 6s infinite ease-in-out; }
+        .umbrella.u1 { left: 0px; animation-delay: 0s; } .umbrella.u2 { left: 130px; top: -40px; transform: scale(0.9); animation-delay: 1s; } .umbrella.u3 { right: 130px; top: -40px; transform: scale(0.9); animation-delay: 2s; } .umbrella.u4 { right: 0px; animation-delay: 0.5s; }
+        @keyframes swing { 0%, 100% { transform: rotate(3deg); } 50% { transform: rotate(-3deg); } }
+
+        /* --- 3. DYNAMIC ANIMATION STAGE --- */
+        #animation-stage { position: fixed; bottom: 0; width: 100%; height: 250px; pointer-events: none; z-index: 2; display: none; }
+        .show-content #animation-stage { display: block; }
+        .scene { position: absolute; bottom: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 1s ease-in-out; display: flex; justify-content: space-between; align-items: flex-end; padding: 0; }
+        .scene.active { opacity: 1; }
+
+        .elephant, .person { position: absolute; bottom: 0; height: 240px; width: auto; filter: drop-shadow(5px 5px 10px rgba(0,0,0,0.6)); transition: all 1.5s ease-out; object-fit: contain; }
+        
+        .scene-elephants .elephant { bottom: -10px; transition: opacity 1s ease; }
+        .scene-elephants .left { transform: scaleX(-1); }
+        .scene-elephants .left.e1 { left: -20px; z-index: 2; }
+        .scene-elephants .left.e2 { left: 160px; transform: scaleX(-1) scale(0.75); bottom: 15px; z-index: 1; filter: brightness(0.9); }
+        .scene-elephants .right.e1 { right: -20px; z-index: 2; }
+        .scene-elephants .right.e2 { right: 160px; transform: scale(0.75); bottom: 15px; z-index: 1; filter: brightness(0.9); }
+        .scene-elephants:not(.active) .elephant { opacity: 0; }
+
+        .person.left { left: 0; } .person.right { right: 0; } 
+        .scene-entry .person.left { left: -250px; opacity: 0; } .scene-entry .person.right { right: -250px; opacity: 0; }
+        .scene-entry.active .person.left { left: 0; opacity: 1; } .scene-entry.active .person.right { right: 0; opacity: 1; }
+        
+        /* --- ENTRY COUPLE ADJUSTMENTS --- */
+        /* Reduce size */
+        .scene-entry .person { height: 160px !important; }
+        /* Position further back towards edges (negative values pull them outward) */
+        .scene-entry.active .person.left { left: -100px; opacity: 1; }
+        .scene-entry.active .person.right { right: -100px; opacity: 1; }
+
+        .scene-wedding .person { bottom: 10px; } 
+
+        @media (max-width: 600px) {
+            .elephant, .person { height: 160px; }
+            .scene-elephants .e2 { display: none; }
+            
+            /* Mobile Size Reduced */
+            .scene-entry .person { height: 110px !important; }
+            /* Mobile Position Adjusted */
+            .scene-entry.active .person.left { left: -40px; }
+            .scene-entry.active .person.right { right: -40px; }
+            
+            .scene-haldi.active .person.left, .scene-wedding.active .person.left, .scene-reception.active .person.left, .scene-thankyou.active .person.left { left: 0px; }
+            .scene-haldi.active .person.right, .scene-wedding.active .person.right, .scene-reception.active .person.right, .scene-thankyou.active .person.right { right: 0px; }
+            
+            .umbrella { width: 110px; } .umbrella.u2, .umbrella.u3 { display: none; }
+        }
+
+        /* --- 4. CONTENT LAYOUT --- */
+        #main-content { opacity: 0; visibility: hidden; transition: opacity 1.5s ease; width: 100%; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding-bottom: 50px; position: relative; z-index: 10; }
+        .show-content { opacity: 1 !important; visibility: visible !important; }
+
+        .hero-card{ 
+            /* Gradient overlay for Hero/Thankyou: 0.1 opacity (very clear) */
+            background-image: linear-gradient(rgba(255, 250, 240, 0.2), rgba(255, 250, 240, 0.2)), url('assets/card_bg.png'); 
+            background-size: cover; border-radius: 12px; border: 2px solid var(--gold); padding: 50px 25px 40px; width: 95%; max-width: 600px; text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.8); margin-top: 40px; margin-bottom: 40px; position: relative; overflow: hidden; 
+        }
+        .thankyou-card { 
+            /* Gradient overlay for Hero/Thankyou: 0.1 opacity (very clear) */
+            background-image: linear-gradient(rgba(255, 250, 240, 0.7), rgba(255, 250, 240, 0.7)), url('assets/card_bg_ty.png'); 
+            background-size: cover; border-radius: 12px; border: 2px solid var(--gold); padding: 50px 25px 40px; width: 95%; max-width: 600px; text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.8); margin-top: 40px; margin-bottom: 40px; position: relative; overflow: hidden; 
+        }
+
+        .hero-card > *, .thankyou-card > * { position: relative; z-index: 2; }
+        
+        /* --- SMART FLEXIBLE FAMILY GRID --- */
+        /* --- SMART FLEXIBLE FAMILY GRID --- */
+        .family-grid { 
+            display: flex; 
+            flex-direction: row; 
+            justify-content: center; 
+            align-items: flex-start;
+            margin-top: 25px; 
+            width: 100%;
+        }
+        
+        .family-group { 
+            flex: 1; 
+            padding: 0 5px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* SMART DIVIDER: Line appears only if two families exist */
+        .family-group:not(:last-child) {
+            border-right: 1px solid rgba(212, 175, 55, 0.4);
+        }
+
+        /* SMART SIZING: If alone, force full width */
+        .family-group:only-child {
+            flex: 0 0 100%; 
+            max-width: 500px; 
+        }
+
+        /* PHOTO STYLING - TALLER OVALS */
+        .family-photo-container {
+            width: 115px;   /* Standard Width */
+            height: 145px;  /* INCREASED HEIGHT (Vertical Oval) */
+            margin: 0 auto 15px;
+            border-radius: 50%; /* Makes it an Oval since width != height */
+            border: 3px solid var(--gold);
+            box-shadow: 0 4px 10px rgba(78, 52, 46, 0.4);
+            overflow: hidden; 
+            background-color: var(--parchment);
             transition: all 0.5s ease;
         }
 
-        .open-state .scroll-roller.top { transform: translateY(-175px); }
-        .open-state .scroll-roller.bottom { transform: translateY(175px); }
-        .open-state .scroll-parchment { height: 350px; top: -153px; }
-        .open-state .scroll-seal { opacity: 0; transform: scale(1.5); pointer-events: none; }
-        .open-state .scroll-content { opacity: 1; transform: scale(1); }
-
-        .tap-hint {
-            position: absolute; bottom: 15%; width: 100%; text-align: center;
-            animation: pulse 2s infinite; transition: opacity 0.5s;
-            z-index: 20; 
-        }
-        .tap-hint p { font-family: 'Gurajada'; color: var(--gold); font-size: 1.6rem; margin: 0; }
-        .tap-hint span { font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; color: #ccc; }
-
-        /* --- RAIN ANIMATION (Petal Shape) --- */
-        #rain-container {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; 
-            z-index: 1; 
-            display: none;
-        }
-        
-        .flower-petal {
-            position: absolute; top: -20px; 
-            width: 14px; height: 14px;
-            border-radius: 0% 100% 0% 100%; 
-            box-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-            animation: fall-spin linear forwards;
-            opacity: 0.9;
+        /* SINGLE VIEW: Make it much larger if it's the only one */
+        .family-group:only-child .family-photo-container {
+            width: 160px;   /* Much Wider */
+            height: 200px;  /* Much Taller */
+            border-width: 4px; /* Thicker border for emphasis */
+            margin-bottom: 25px;
         }
 
-        /* Marigold Style */
-        .flower-petal.marigold { background: linear-gradient(45deg, #ffca28, #fb8c00); }
-        /* Rose Style */
-        .flower-petal.rose { background: linear-gradient(45deg, #ef5350, #f8bbd0); }
-        
-        @keyframes fall-spin { 
-            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
-            10% { opacity: 1; }
-            100% { transform: translateY(110vh) rotate(360deg); opacity: 0.8; } 
+        .family-photo {
+            width: 100%; height: 100%; object-fit: cover;
+            filter: sepia(0.25) contrast(1.05) brightness(0.95);
         }
 
-        /* --- 2. MAIN CONTENT LAYER --- */
-        #main-content {
-            opacity: 0; visibility: hidden; transition: opacity 1.5s ease;
-            width: 100%; min-height: 100vh; 
-            display: flex; flex-direction: column; align-items: center; 
-            padding-bottom: 50px; position: relative; 
-            z-index: 10;
+        .side-tag {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--maroon);
+            margin-bottom: 5px;
+            font-weight: 700;
+            opacity: 0.8;
         }
-        .show-content { opacity: 1 !important; visibility: visible !important; }
 
-        /* HERO CARD */
-        .hero-card {
-            background-color: #fffaf0; 
-            background-image: url('assets/card_bg.png'); 
-            background-size: cover; 
-            background-position: center;
-            background-repeat: no-repeat;
-            
-            border-radius: 12px;
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            
-            padding: 50px 25px 40px; 
-            width: 95%; max-width: 600px; 
+        .family-header { 
+            font-family: var(--script-font); 
+            font-size: 1.6rem; 
+            color: var(--card-text);
+            margin-bottom: 8px; 
+            padding-bottom: 8px; 
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+            line-height: 1.1;
             text-align: center;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.8); 
-            margin-top: 40px; margin-bottom: 40px; 
-            position: relative;
-            overflow: hidden; 
+            
+            /* Alignment Fix: Keeps headers aligned even if one photo is hidden */
+            min-height: 3.8rem; 
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end; 
+        }
+        .family-header .te { 
+            font-family: var(--telugu-font); 
+            font-size: 1.2rem; 
+            color: var(--gold-dark); 
+            display: block; 
+            margin-top: 5px; 
+        }
+        
+        .names-list p { 
+            margin: 6px 0; 
+            line-height: 1.4; 
+            font-size: 1rem; 
+            color: var(--brown-dark); 
+            font-weight: 600;
+            text-align: center;
+        }
+        .names-list .te { 
+            display: block; 
+            font-family: var(--telugu-font); 
+            font-size: 1.1rem; 
+            color: #5d4037; 
+            font-weight: normal;
         }
 
-        .hero-card::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255, 253, 245, 0.3); pointer-events: none;
+        /* --- FAMILY PHOTO STYLES --- */
+        .family-photo-container {
+            width: 100px;  /* Slightly narrower */
+            height: 130px; /* Taller height makes it a rectangle */
+            border-radius: 10px;
+            margin: 0 auto 15px; /* Center and add space below */
+            /* border-radius: 50%; Make round */
+            border: 3px solid var(--gold); /* Themed border */
+            /* Soft shadow to lift it slightly off the background */
+            box-shadow: 0 4px 10px rgba(78, 52, 46, 0.4); 
+            overflow: hidden; 
+            position: relative;
+            background-color: var(--parchment); /* Fallback background */
         }
-        .hero-card > * { position: relative; z-index: 2; }
+
+        .family-photo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Ensures the image fills the circle without stretching */
+            /* This filter is key for blending: subtle sepia and contrast to match the card's warm tones */
+            filter: sepia(0.25) contrast(1.05) brightness(0.95);
+            transition: transform 0.5s ease;
+        }
+        
+        /* Optional: Slight zoom effect on hover */
+        .family-group:hover .family-photo {
+            transform: scale(1.1);
+        }
+        .thankyou-card { margin-bottom: 250px; }
+        .couple-names-small { font-family: var(--script-font); font-size: 2.5rem; color: var(--maroon); margin-top: 15px; }
+        .thankyou-card p { font-family: 'Montserrat', sans-serif; font-size: 1.2rem; color: var(--card-text); }
 
         .subhalekha { font-family: 'Montserrat', sans-serif; font-size: 0.8rem; letter-spacing: 4px; text-transform: uppercase; color: var(--gold-dark); margin-bottom: 20px; font-weight: 600; margin-top: 10px;}
-        
-        .couple-names { 
-            font-family: var(--script-font);
-            font-size: 3.5rem; line-height: 1.2; color: var(--maroon); margin: 0; 
-            text-shadow: 0 1px 1px rgba(255,255,255,0.8); 
-        }
-        
+        .couple-names { font-family: var(--script-font); font-size: 3.5rem; line-height: 1.2; color: var(--maroon); margin: 0; text-shadow: 0 1px 1px rgba(255,255,255,0.8); }
         .ampersand { font-family: var(--script-font); font-size: 2.5rem; color: var(--gold-dark); margin: 10px 0; }
-        .telugu-names { font-family: 'Gurajada', serif; font-size: 1.8rem; color: var(--brown-wood); margin-top: 15px; margin-bottom: 30px; letter-spacing: 0.5px; text-shadow: 0 1px 1px rgba(255,255,255,0.8); }
-        
-        .date-divider { 
-            border-top: 1px solid var(--gold); border-bottom: 1px solid var(--gold); 
-            padding: 15px 0; margin: 20px 0; 
-            font-family: 'Montserrat', sans-serif; font-size: 1.2rem; letter-spacing: 3px; 
-            color: var(--text-brown); font-weight: 700;
-        }
-        
-        .location { font-family: 'Montserrat', sans-serif; font-size: 1rem; color: var(--text-brown); font-weight: 500; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 1px; }
+        .telugu-names { font-family: var(--telugu-font); font-size: 2rem; color: var(--brown-wood); margin-top: 15px; margin-bottom: 30px; letter-spacing: 0.5px; text-shadow: 0 1px 1px rgba(255,255,255,0.8); }
+        .date-divider { border-top: 1px solid var(--gold); border-bottom: 1px solid var(--gold); padding: 15px 0; margin: 20px 0; font-family: 'Montserrat', sans-serif; font-size: 1.2rem; letter-spacing: 3px; color: var(--card-text); font-weight: 700; }
+        .location { font-family: 'Montserrat', sans-serif; font-size: 1rem; color: var(--card-text); font-weight: 700; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 1px; }
         
         .countdown-grid { display: flex; justify-content: center; gap: 15px; }
-        .cd-box { 
-            background: rgba(255, 255, 255, 0.9); border: 1px solid var(--gold); 
-            border-radius: 8px; width: 65px; padding: 10px 0;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
+        .cd-box { background: rgba(255, 255, 255, 0.9); border: 1px solid var(--gold); border-radius: 8px; width: 65px; padding: 10px 0; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .cd-num { font-family: 'Montserrat', sans-serif; font-size: 1.5rem; font-weight: 700; color: var(--maroon); display: block; }
         .cd-label { font-size: 0.6rem; color: var(--gold-dark); text-transform: uppercase; margin-top: 5px; font-weight: 600; }
 
-        /* --- 3. ITINERARY (TILES) --- */
+        .muggu-corners::after, .muggu-corners::before { content: ''; position: absolute; width: 80px; height: 80px; background-size: contain; background-repeat: no-repeat; opacity: 0.2; z-index: 1; pointer-events: none; }
+        .muggu-corners::before { top: 10px; left: 10px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='none' stroke='%23d4af37' stroke-width='2' d='M50,5 C75,5 95,25 95,50 C95,75 75,95 50,95 C25,95 5,75 5,50 C5,25 25,5 50,5 Z'/%3E%3Cpath fill='none' stroke='%23d4af37' stroke-width='2' d='M50,15 C70,15 85,30 85,50 C85,70 70,85 50,85 C30,85 15,70 15,50 C15,30 30,15 50,15 Z'/%3E%3Cpath fill='%23d4af37' d='M50,25 C65,25 75,35 75,50 C75,65 65,75 50,75 C35,75 25,65 25,50 C25,35 35,25 50,25 Z'/%3E%3C/svg%3E"); }
+        .muggu-corners::after { bottom: 10px; right: 10px; transform: rotate(180deg); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='none' stroke='%23d4af37' stroke-width='2' d='M50,5 C75,5 95,25 95,50 C95,75 75,95 50,95 C25,95 5,75 5,50 C5,25 25,5 50,5 Z'/%3E%3Cpath fill='none' stroke='%23d4af37' stroke-width='2' d='M50,15 C70,15 85,30 85,50 C85,70 70,85 50,85 C30,85 15,70 15,50 C15,30 30,15 50,15 Z'/%3E%3Cpath fill='%23d4af37' d='M50,25 C65,25 75,35 75,50 C75,65 65,75 50,75 C35,75 25,65 25,50 C25,35 35,25 50,25 Z'/%3E%3C/svg%3E"); }
+
+        .invite-msg { text-align: center; max-width: 600px; width: 90%; margin: 0 auto 30px; padding: 25px 20px; border-top: 1px solid var(--gold); border-bottom: 1px solid var(--gold); background: rgba(212, 175, 55, 0.15); border-radius: 8px; }
+        .invite-msg p { font-family: 'Montserrat', sans-serif; font-size: 1.1rem; color: var(--parchment); line-height: 1.6; margin: 0 0 10px 0; text-shadow: 0 1px 1px rgba(0,0,0,0.8); }
+        .msg-highlight { font-family: var(--script-font); font-size: 2.2rem; color: var(--gold); margin-top: 15px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+
         .schedule-title { font-family: 'Montserrat', sans-serif; font-size: 2rem; color: var(--parchment); text-align: center; margin-bottom: 10px; margin-top: 20px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
-        .schedule-sub { font-family: 'Gurajada'; font-size: 1.4rem; color: #ddd; text-align: center; margin-bottom: 30px; text-shadow: 0 1px 2px rgba(0,0,0,0.8); }
-        
+        .schedule-sub { font-family: var(--telugu-font); font-size: 1.4rem; color: #ddd; text-align: center; margin-bottom: 30px; text-shadow: 0 1px 2px rgba(0,0,0,0.8); }
         .events-wrapper { width: 100%; max-width: 600px; padding: 0 15px; position: relative; }
         
-        /* DATE CARD */
+        /* CARD GENERAL STYLING */
         .date-card { 
-            background-color: #fffaf0;
-            background-image: url('assets/card_bg.png');
-            background-size: cover; 
-            background-position: center;
-            border: 1px solid var(--card-border); 
-            border-radius: 12px; margin-bottom: 25px; overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            background-size: cover; background-position: center; border: 1px solid var(--card-border); border-radius: 12px; margin-bottom: 25px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            /* Fixed min-height for AT LEAST 4 events */
+            min-height: 480px; 
+            display: flex; flex-direction: column; justify-content: flex-start; padding-top: 0;
         }
+        .date-card.wedding { border: 2px solid var(--gold); box-shadow: 0 0 25px rgb(172 13 224); transform: scale(1.02); }
         
-        .date-card.wedding { 
-            border: 2px solid var(--gold); 
-            box-shadow: 0 0 25px rgba(212, 175, 55, 0.6); 
-            transform: scale(1.02);
-        }
+        .date-header { position: relative; width: 100%; padding: 15px 20px; background: var(--date-strip-bg); display: flex; justify-content: center; align-items: center; font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 1.4rem; color: var(--text-brown); border-bottom: 1px solid var(--card-border); margin-bottom: 10px; flex-shrink: 0; }
+        .wedding .date-header { background: rgba(255, 228, 181, 0.9); color: var(--maroon); }
         
-        .date-header { 
-            padding: 15px 20px; 
-            background: var(--date-strip-bg); 
-            display: flex; justify-content: center; align-items: center; 
-            font-family: 'Montserrat', sans-serif; 
-            font-weight: 400; 
-            font-size: 1.4rem; color: var(--text-brown);
-            border-bottom: 1px solid var(--card-border);
-        }
-        .wedding .date-header { background: rgba(255, 228, 181, 0.85); color: var(--maroon); }
-        
-        .event-item { 
-            padding: 25px 20px;
-            background: rgba(255,255,255,0.0); 
-            backdrop-filter: blur(0px);
-            border-bottom: 1px dashed rgba(0,0,0,0.1); 
-            display: flex; flex-direction: column; align-items: center; text-align: center; 
-        }
+        .event-item { padding: 25px 20px; background: rgba(255,255,255,0.0); backdrop-filter: blur(0px); border-bottom: 1px dashed rgba(184, 134, 11, 0.3); display: flex; flex-direction: column; align-items: center; text-align: center; flex-grow: 1; justify-content: center; }
         .event-item:last-child { border-bottom: none; }
         
-        .ev-title { font-family: 'Montserrat', sans-serif; font-size: 1.4rem; color: var(--maroon); margin: 0; font-weight: 700; text-shadow: 0 0 10px rgba(255,255,255,0.8); }
-        .ev-telugu { font-family: 'Gurajada'; font-size: 1.5rem; color: var(--gold-dark); margin: 6px 0 12px; font-weight: 500; text-shadow: 0 0 10px rgba(255,255,255,0.8); }
-        
-        .ev-detail { 
-            font-family: 'Montserrat', sans-serif;
-            font-size: 1rem; color: #3e2723; 
-            display: flex; align-items: center; justify-content: center; 
-            gap: 10px; margin-bottom: 6px; font-weight: 600;
-            text-shadow: 0 0 5px rgba(255,255,255,0.9);
-        }
-        .ev-detail i { width: 18px; text-align: center; color: var(--maroon); }
-        
-        .map-icon { 
-            margin-top: 15px; 
-            color: var(--maroon); font-size: 1.2rem; padding: 12px; 
-            background: rgba(255,255,255,0.8); border-radius: 50%; 
-            cursor: pointer; border: 1px solid rgba(0,0,0,0.1); 
-            transition: all 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
+        .location-row { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; }
+        .map-icon { color: var(--maroon); font-size: 1rem; padding: 8px; background: rgba(255,255,255,0.9); border-radius: 50%; cursor: pointer; border: 1px solid var(--gold); transition: all 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: inline-flex; margin-left: 5px; }
         .map-icon:active { background: var(--gold); color: white; transform: scale(0.95); }
-        
-        .map-embed { 
-            height: 0; overflow: hidden; transition: height 0.3s ease; 
-            width: calc(100% + 40px);
-            margin-left: -20px;
-            margin-right: -20px;
-            margin-bottom: -25px;
-        }
+        .map-embed { height: 0; overflow: hidden; transition: height 0.3s ease; width: calc(100% + 40px); margin-left: -20px; margin-right: -20px; margin-bottom: -25px; }
         .map-embed.open { height: 250px; margin-top: 20px; }
         iframe { width: 100%; height: 100%; border: 0; } 
 
-        .music-fab { position: fixed; top: 20px; right: 20px; width: 45px; height: 45px; border-radius: 50%; background: rgba(0,0,0,0.6); border: 2px solid var(--gold); display: flex; justify-content: center; align-items: center; z-index: 10000; color: var(--gold); backdrop-filter: blur(5px); }
+        .ev-title { font-family: 'Montserrat', sans-serif; font-size: 1.4rem; color: var(--maroon); margin: 0; font-weight: 700; text-shadow: 0 1px 1px rgba(255,255,255,0.8); }
+        .ev-telugu { font-family: var(--telugu-font); font-size: 1.5rem; color: var(--gold-dark); margin: 6px 0 12px; font-weight: 800; text-shadow: 0 1px 1px rgba(255,255,255,0.8); }
+        .ev-detail { font-family: 'Montserrat', sans-serif; font-size: 1rem; color: var(--card-text); display: flex; align-items: center; justify-content: center; gap: 5px; margin-bottom: 6px; font-weight: 600; text-shadow: 0 1px 1px rgba(255,255,255,0.8); }
+        .ev-detail i { width: 18px; text-align: center; color: var(--maroon); }
+
+        /* --- CARD SPECIFIC STYLES WITH GRADIENT OVERLAYS --- */
+        
+        /* Card 1 (23rd): Whitish Pink Overlay (0.85 opacity) */
+        .card-1 { 
+            background-image: linear-gradient(rgba(255, 245, 245, 0.7), rgba(255, 245, 245, 0.7)), url('assets/card_bg_1.png'); 
+            border-color: #f8bbd0; 
+        }
+        .card-1 .date-header { background: rgba(255, 228, 225, 0.95); color: #880e4f; border-bottom: 1px solid #f8bbd0; } 
+        .card-1 .ev-title { color: #c2185b; }
+        .card-1 .ev-telugu { color: #ad1457; }
+        .card-1 .ev-detail { color: #4a0020; } /* Darker text for readability */
+        .card-1 .ev-detail i { color: #880e4f; }
+        .card-1 .map-icon { border-color: #ad1457; color: #880e4f; }
+
+        /* Card 2 (24th): Cream Overlay (0.85 opacity) */
+        .card-2 { 
+            background-image: linear-gradient(rgba(255, 250, 240, 0.4), rgba(255, 250, 240, 0.4)), url('assets/card_bg_2.png'); 
+            border-color: var(--gold); 
+        }
+        .card-2 .date-header { background: rgb(250 217 192); color: #ff6d3f; } 
+        .card-2 .ev-title { color: #ff561ade }
+        .card-2 .ev-telugu { color: #ff1a1a; }
+        .card-2 .ev-detail { color: #3e2723; } /* Darker brown */
+
+        /* Card 3 (25th): Cream Overlay (0.85 opacity) */
+        .card-3 { 
+            background-image: linear-gradient(rgba(255, 250, 240, 0.7), rgba(255, 250, 240, 0.7)), url('assets/card_bg_3.png'); 
+            border-color: var(--gold); 
+        }
+        .card-3 .date-header { background: rgba(255, 248, 235, 0.0); color: #882eb3cf; font-weight: 700;} 
+        .card-3 .ev-title { color: #882eb3cf; font-family: 'Pinyon Script'; font-size: 3rem;}
+        .card-3 .ev-telugu { color: #882eb3cf; font-size: 3rem;}
+        .card-3 .ev-detail { color: #3e2723; }
+
+        /* Card 4, 5, 6: Cream Overlay */
+        .card-4, .card-5, .card-6 { 
+            background-image: linear-gradient(rgba(255, 250, 240, 0.5), rgba(255, 250, 240, 0.5)), url('assets/card_bg_4.png'); 
+            border-color: var(--gold); 
+        }
+        .card-4 .date-header, .card-5 .date-header, .card-6 .date-header { background: rgb(107 44 44 / 95%); color: #cc836f; } 
+        .card-4 .ev-title, .card-5 .ev-title, .card-6 .ev-title { color: #cb4015; }
+        .card-4 .ev-telugu, .card-5 .ev-telugu, .card-6 .ev-telugu { color: #d83300 }
+        .card-4 .ev-detail, .card-5 .ev-detail, .card-6 .ev-detail { color: #3e2723; }
+
+        .music-fab { position: fixed; top: 20px; right: 20px; width: 45px; height: 45px; border-radius: 50%; background: rgba(92, 58, 46, 0.8); border: 2px solid var(--gold); display: flex; justify-content: center; align-items: center; z-index: 10000; color: var(--gold); backdrop-filter: blur(5px); }
         .music-fab.playing { animation: spin 4s linear infinite; box-shadow: 0 0 15px var(--gold); }
 
-        /* FOOTER STYLES (UPDATED COLOR) */
-        .footer {
-            text-align: center;
-            margin-top: 40px;
-            margin-bottom: 20px;
-            padding: 20px;
-            border-top: 1px solid rgba(212, 175, 55, 0.3);
-            width: 100%;
-            /* Changed to parchment so it's visible on dark background */
-            color: var(--parchment); 
-            text-shadow: 0 1px 3px rgba(0,0,0,0.8);
-            font-family: 'Montserrat', sans-serif;
-            font-size: 0.8rem;
-            z-index: 10;
-            position: relative;
-        }
+        .footer { text-align: center; margin-top: 20px; margin-bottom: 20px; padding: 20px; border-top: 1px solid var(--gold); width: 100%; color: var(--parchment); text-shadow: 0 1px 3px rgba(0,0,0,0.8); font-family: 'Montserrat', sans-serif; font-size: 0.8rem; z-index: 10; position: relative; }
         .footer p { margin: 5px 0; }
 
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } } @keyframes spin { 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-    <div class="music-fab" id="musicBtn" onclick="toggleMusic()">
-        <i class="fas fa-music"></i>
-    </div>
+    <div class="music-fab" id="musicBtn" onclick="toggleMusic()"><i class="fas fa-music"></i></div>
 
     <div id="opening-layer" onclick="openInvitation()">
-        
         <div id="story-layer"></div>
-
         <div class="scroll-container" id="scroll">
-            <div class="scroll-roller top">
-                <div class="tassel-string left"></div>
-                <div class="tassel-string right"></div>
+            <div class="scroll-roller top"><div class="tassel-string left"></div><div class="tassel-string right"></div></div>
+            <div class="scroll-parchment"><div class="scroll-content"><img src="assets/logo.png" class="custom-logo" onerror="this.style.display='none'; document.getElementById('fallback-text').style.display='block';"><h2 id="fallback-text" style="display:none;">A & G</h2><span>శుభలేఖ</span></div></div>
+            <div class="scroll-roller bottom"><div class="tassel-string left"></div><div class="tassel-string right"></div></div>
+            <div class="scroll-seal">
+                <img src="assets/ganesh_seal.png" class="seal-image" alt="Ganesh Seal" onerror="this.style.display='none';">
             </div>
-            
-            <div class="scroll-parchment">
-                <div class="scroll-content">
-                    <img src="assets/logo.png" class="custom-logo" onerror="this.style.display='none'; document.getElementById('fallback-text').style.display='block';">
-                    <h2 id="fallback-text" style="display:none;">A & G</h2>
-                    <span>శుభలేఖ</span>
-                </div>
-            </div>
-            
-            <div class="scroll-roller bottom">
-                <div class="tassel-string left"></div>
-                <div class="tassel-string right"></div>
-            </div>
-            <div class="scroll-seal">A&G</div>
         </div>
-        
-        <div class="tap-hint" id="tapHint">
-            <p>శుభలేఖను తెరవడానికి నొక్కండి</p>
-            <span>Tap to Open</span>
-        </div>
+        <div class="tap-hint" id="tapHint"><p>శుభలేఖను తెరవడానికి నొక్కండి</p><span>Tap to Open</span></div>
     </div>
 
     <div id="main-content">
         <div id="rain-container"></div>
+        <div class="hanging-decor" id="hanging-decor">
+            <img src="assets/umbrella.png" class="umbrella u1" alt="" onerror="this.style.display='none'">
+            <img src="assets/umbrella.png" class="umbrella u2" alt="" onerror="this.style.display='none'">
+            <img src="assets/umbrella.png" class="umbrella u3" alt="" onerror="this.style.display='none'">
+            <img src="assets/umbrella.png" class="umbrella u4" alt="" onerror="this.style.display='none'">
+        </div>
         
-        <div class="hero-card">
+        <div id="animation-stage">
+            <div id="scene-elephants" class="scene scene-elephants active">
+                <img src="assets/elephant.gif" class="elephant left e1" onerror="this.src='assets/elephant.png'">
+                <img src="assets/elephant.gif" class="elephant left e2" onerror="this.src='assets/elephant.png'">
+                <img src="assets/elephant.gif" class="elephant right e1" onerror="this.src='assets/elephant.png'">
+                <img src="assets/elephant.gif" class="elephant right e2" onerror="this.src='assets/elephant.png'">
+            </div>
+
+            <div id="scene-entry" class="scene scene-entry">
+                <img src="assets/bride_entry.gif" class="person right" alt="Bride" onerror="this.src='assets/bride_entry.png'">
+                <img src="assets/groom_entry.gif" class="person left" alt="Groom" onerror="this.src='assets/groom_entry.png'">
+            </div>
+
+            <div id="scene-haldi"  class="scene scene-entry">
+                <img src="assets/haldi_couple.png" class="person left" alt="Haldi Left" onerror="this.src='assets/groom_entry.png'">
+                <img src="assets/haldi_couple.png" class="person right" alt="Haldi Right" onerror="this.src='assets/bride_entry.png'">
+            </div>
+
+            <div id="scene-wedding"  class="scene scene-entry">
+                <img src="assets/wedding_couple.png" class="person left" alt="Wedding Left" onerror="this.src='assets/groom_entry.png'">
+                <img src="assets/wedding_couple.png" class="person right" alt="Wedding Right" onerror="this.src='assets/bride_entry.png'">
+            </div>
+
+            <div id="scene-reception"  class="scene scene-entry">
+                <img src="assets/reception_couple.png" class="person left" alt="Reception Left" onerror="this.src='assets/groom_entry.png'">
+                <img src="assets/reception_couple.png" class="person right" alt="Reception Right" onerror="this.src='assets/bride_entry.png'">
+            </div>
+
+            <div id="scene-thankyou"  class="scene scene-thankyou">
+                <img src="assets/bowing_couple.png" class="person left" alt="Thank You Left" onerror="this.src='assets/groom_entry.png'">
+                <img src="assets/bowing_couple.png" class="person right" alt="Thank You Right" onerror="this.src='assets/bride_entry.png'">
+            </div>
+        </div>
+        
+        <div class="hero-card muggu-corners">
             <div class="subhalekha">Subhalekha</div>
             <h1 class="couple-names">Aiswarya Swetha</h1>
             <div class="ampersand">&</div>
             <h1 class="couple-names">Venkata Sai Goutham</h1>
-            
             <div class="telugu-names">ఐశ్వర్య శ్వేత & వెంకట సాయి గౌతమ్</div>
-            
             <div class="date-divider">FEBRUARY 25, 2026</div>
             <div class="location">Hyderabad, Telangana</div>
             <div class="countdown-grid">
@@ -435,44 +488,101 @@
             </div>
         </div>
 
-        <div class="schedule-title">Itinerary</div>
+        <div class="invite-msg">
+            <p>With joy in our hearts, we invite you and your family to grace us with your presence.</p>
+            <div class="msg-highlight">We look forward to celebrating with you!</div>
+        </div>
+
+        <div class="schedule-title" id="schedule-start">Itinerary</div>
         <div class="schedule-sub">లొకేషన్ కోసం మ్యాప్ ఐకాన్‌పై నొక్కండి</div>
         <div class="events-wrapper" id="events-container">
             <div style="text-align:center; color:#ccc;">Loading Events...</div>
         </div>
 
+        <div class="thankyou-card muggu-corners" id="thankyou-trigger">
+            <div class="subhalekha">
+                Invited by<br>
+                <span style="font-family:var(--telugu-font); font-size:1.5em; color:var(--maroon); font-weight:normal;">ఆహ్వానించువారు</span>
+            </div>
+            
+            <div class="family-grid">
+                
+                <div class="family-group">
+                    <!-- <div class="family-photo-container">
+                        <img src="assets/grooms_family.png" 
+                             alt="Groom's Family" 
+                             class="family-photo" 
+                             onerror="this.closest('.family-photo-container').style.visibility='hidden'">
+                    </div> -->
+
+                    <span class="side-tag">Groom's Family</span>
+                    <div class="family-header">
+                        Gonuguntla
+                        <span class="te">గోనుగుంట్ల వారి కుటుంబం</span>
+                    </div>
+                    <div class="names-list">
+                        <p>Sreenivasulu<br><span class="te">శ్రీనివాసులు</span></p>
+                        <p>Rajyalakshmi<br><span class="te">రాజ్యలక్ష్మి</span></p>
+                        <p>Venkata Sai Goutham<br><span class="te">వెంకట సాయి గౌతమ్</span></p>
+                        <p>Venkata Sai Padma Karthik<br><span class="te">వెంకట సాయి పద్మ కార్తీక్</span></p>
+                    </div>
+                </div>
+
+                <div class="family-group">
+                    <!-- <div class="family-photo-container">
+                        <img src="assets/brides_family.png" 
+                             alt="Bride's Family" 
+                             class="family-photo" 
+                             onerror="this.closest('.family-photo-container').style.visibility='hidden'">
+                    </div> -->
+                    
+                    <span class="side-tag">Bride's Family</span>
+                    <div class="family-header">
+                        Jonnalagadda
+                        <span class="te">జొన్నలగడ్డ వారి కుటుంబం</span>
+                    </div>
+                    <div class="names-list">
+                        <p>Siva Kumar<br><span class="te">శివ కుమార్</span></p>
+                        <p>Uma Surya Kumari<br><span class="te">ఉమా సూర్య కుమారి</span></p>
+                        <p>Aiswarya Swetha<br><span class="te">ఐశ్వర్య శ్వేత</span></p>
+                        <p>Prannoy Venkat<br><span class="te">ప్రణయ్ వెంకట్</span></p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
         <div class="footer">
-            <p>Designed by Aiswarya & Goutham</p>
+            <p>Designed & Developed by Aiswarya & Goutham</p>
             <p>2026</p>
         </div>
     </div>
 
     <script>
+        function toggleMap(btn) {
+            const item = btn.closest('.event-item');
+            if (item) {
+                const map = item.querySelector('.map-embed');
+                if (map) map.classList.toggle('open');
+            }
+        }
+
         const RAW_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR-0_JwNP5TLQgQM3P6oWpzB8cgb2VrbYOB_Hf1bHu1twH-1bVPNQxNY3-vf8nUuoLXr1J7TXhtB2QG/pub?output=csv';
-        
-        // CACHE BUSTER
         const SHEET_URL = 'https://corsproxy.io/?' + encodeURIComponent(RAW_SHEET_URL + '&t=' + Date.now());
 
         let opened = false;
         let autoTimer;
         let rainInterval;
 
-        window.onload = () => {
-            // Auto-open timer set to 5000ms (5 seconds)
-            autoTimer = setTimeout(() => { if(!opened) openInvitation(true); }, 5000);
-        };
+        window.onload = () => { autoTimer = setTimeout(() => { if(!opened) openInvitation(true); }, 20000); };
 
         function openInvitation(isAuto = false) {
             if(opened) return;
             opened = true;
             clearTimeout(autoTimer);
-
-            // FORCE AUTO PLAY: We pass true to force it
             toggleMusic(true, false);
-
             document.getElementById('scroll').classList.add('open-state');
             document.getElementById('tapHint').style.opacity = '0';
-
             setTimeout(() => {
                 document.getElementById('opening-layer').style.opacity = '0';
                 setTimeout(() => {
@@ -480,6 +590,8 @@
                     document.getElementById('main-content').classList.add('show-content');
                     startRain(); 
                     initAutoScroll();
+                    window.addEventListener('scroll', updateActiveScene);
+                    updateActiveScene(); 
                 }, 1000);
             }, 1200);
         }
@@ -487,24 +599,89 @@
         function startRain() {
             const container = document.getElementById('rain-container');
             container.style.display = 'block';
-            
             rainInterval = setInterval(() => {
                 const petal = document.createElement('div');
                 petal.classList.add('flower-petal');
-                
-                // Randomly assign Rose or Marigold
-                if (Math.random() > 0.5) {
-                    petal.classList.add('marigold');
-                } else {
-                    petal.classList.add('rose');
-                }
-
+                if (Math.random() > 0.5) { petal.classList.add('marigold'); } else { petal.classList.add('rose'); }
                 petal.style.left = Math.random() * 100 + 'vw';
                 petal.style.animationDuration = (Math.random() * 3 + 2) + 's'; 
                 container.appendChild(petal);
                 setTimeout(() => { petal.remove(); }, 5000);
             }, 100); 
-            setTimeout(() => { clearInterval(rainInterval); }, 15000);
+        }
+
+        /* --- CENTER-POINT CHECK FOR AUTO-SCROLL SYNC --- */
+        function updateActiveScene() {
+            const scenes = {
+                'default': document.getElementById('scene-elephants'),
+                'entry': document.getElementById('scene-entry'),
+                'haldi': document.getElementById('scene-haldi'),
+                'wedding': document.getElementById('scene-wedding'),
+                'reception': document.getElementById('scene-reception'),
+                'thankyou': document.getElementById('scene-thankyou')
+            };
+
+            const viewCenter = window.innerHeight / 2;
+            const cards = document.querySelectorAll('.date-card');
+            const thankyouCard = document.getElementById('thankyou-trigger');
+            const scheduleStart = document.getElementById('schedule-start');
+            const hangingDecor = document.getElementById('hanging-decor');
+            
+            let activeType = 'default'; 
+
+            // 0. Check Umbrella Visibility
+            if (scheduleStart && hangingDecor) {
+                const scheduleRect = scheduleStart.getBoundingClientRect();
+                if (scheduleRect.top < window.innerHeight * 0.8) {
+                    hangingDecor.classList.add('hidden');
+                } else {
+                    hangingDecor.classList.remove('hidden');
+                }
+            }
+
+            // 1. Check Thank You Card First
+            const tyRect = thankyouCard.getBoundingClientRect();
+            if (tyRect.top < window.innerHeight && tyRect.bottom > 0) {
+                activeType = 'thankyou';
+            } else {
+                // 2. Find which card is closest to center
+                let closestDist = Infinity;
+                let closestCard = null;
+
+                cards.forEach(card => {
+                    const rect = card.getBoundingClientRect();
+                    const cardCenter = rect.top + (rect.height / 2);
+                    const dist = Math.abs(cardCenter - viewCenter);
+                    
+                    if (rect.top < window.innerHeight && rect.bottom > 0) {
+                        if (dist < closestDist) {
+                            closestDist = dist;
+                            closestCard = card;
+                        }
+                    }
+                });
+
+                if (closestCard) {
+                    const text = closestCard.innerText.toLowerCase();
+                    if (text.includes('reception')) {
+                        activeType = 'reception';
+                    } else if (text.includes('wedding') || text.includes('muhurtham')) {
+                        activeType = 'wedding';
+                    } else if (text.includes('haldi') || text.includes('sangeet') || text.includes('sangeeth')) {
+                        activeType = 'haldi'; 
+                    } else if (text.includes('pelli') || text.includes('welcome')) {
+                        activeType = 'entry';
+                    }
+                }
+            }
+
+            Object.keys(scenes).forEach(key => {
+                if (key === activeType) {
+                    scenes[key].classList.add('active');
+                } else {
+                    scenes[key].classList.remove('active');
+                }
+            });
         }
 
         const audio = new Audio('assets/song.mp3');
@@ -513,23 +690,13 @@
 
         function toggleMusic(forcePlay, silentMode) {
             const btn = document.getElementById('musicBtn');
-            // If forcing play OR toggling from off to on
             if(forcePlay || (!isPlaying && arguments.length === 0)) {
                 if(audio.currentTime < 60) audio.currentTime = 60;
-                audio.play().then(() => {
-                    isPlaying = true; btn.classList.add('playing');
-                }).catch(e => {
-                    // Browser blocked auto-play
-                    if(!silentMode) console.log("Audio blocked by browser policy");
-                    isPlaying = false; btn.classList.remove('playing');
-                });
-            } else {
-                audio.pause(); isPlaying = false; btn.classList.remove('playing');
-            }
+                audio.play().then(() => { isPlaying = true; btn.classList.add('playing'); }).catch(e => { if(!silentMode) console.log("Audio blocked"); isPlaying = false; btn.classList.remove('playing'); });
+            } else { audio.pause(); isPlaying = false; btn.classList.remove('playing'); }
         }
 
         function initAutoScroll() {
-            // Updated Scroll Speed to 1.5
             let speed = 1.5;
             const scrollInt = setInterval(() => {
                 if(window.scrollY + window.innerHeight >= document.body.offsetHeight) clearInterval(scrollInt);
@@ -538,17 +705,8 @@
             ['touchstart', 'wheel'].forEach(e => document.addEventListener(e, () => clearInterval(scrollInt), {once:true}));
         }
 
-        // Helper for suffixes
         const getOrdinalNum = (n) => n + (["st","nd","rd"][((n+90)%100-10)%10-1]||"th");
-
-        function formatDateFancy(dateStr) {
-             const d = new Date(dateStr);
-             if(isNaN(d)) return dateStr;
-             const month = d.toLocaleString('default', {month:'short'});
-             const day = getOrdinalNum(d.getDate());
-             const year = d.getFullYear();
-             return `${month} ${day}, ${year}`;
-        }
+        function formatDateFancy(dateStr) { const d = new Date(dateStr); if(isNaN(d)) return dateStr; return `${d.toLocaleString('default', {month:'short'})} ${getOrdinalNum(d.getDate())}, ${d.getFullYear()}`; }
 
         Papa.parse(SHEET_URL, {
             download: true, header: true,
@@ -568,36 +726,25 @@
                 const isWedding = (row.iswedding||'').toLowerCase() === 'true';
                 
                 let mapHtml = '';
-                
                 if(row.maplink && row.maplink.trim() !== '') {
-                    if(row.maplink.includes('<iframe')) {
-                        mapHtml = row.maplink; 
-                    } else {
-                        mapHtml = `<iframe loading="lazy" src="${row.maplink}"></iframe>`; 
-                    }
-                } 
-                else {
+                    if(row.maplink.includes('<iframe')) { mapHtml = row.maplink; } else { mapHtml = `<iframe loading="lazy" src="${row.maplink}"></iframe>`; }
+                } else {
                     let loc = row.locationname || row.location;
-                    if(loc) {
-                        let safeLoc = encodeURIComponent(loc);
-                        let mapSrc = `https://maps.google.com/maps?q=${safeLoc}&output=embed`;
-                        mapHtml = `<iframe loading="lazy" src="${mapSrc}"></iframe>`;
-                    }
+                    if(loc) { let safeLoc = encodeURIComponent(loc); mapHtml = `<iframe loading="lazy" src="https://maps.google.com/maps?q=${safeLoc}&output=embed"></iframe>`; }
                 }
 
                 if(row.date !== lastDate) {
                     lastDate = row.date;
                     dateCount++;
-                    
                     if(groupDiv) container.appendChild(groupDiv);
                     groupDiv = document.createElement('div');
-                    groupDiv.className = `date-card ${isWedding?'wedding':''}`;
+                    // Add card-1, card-2, etc. class
+                    groupDiv.className = `date-card ${isWedding?'wedding':''} card-${dateCount}`;
                     
-                    groupDiv.style.backgroundImage = `url('assets/card_bg_${dateCount}.png')`;
+                    // REMOVED INLINE JS BG - now handled by CSS classes for overlay
+                    // groupDiv.style.backgroundImage = `url('assets/card_bg_${dateCount}.png')`;
                     
                     let displayDate = formatDateFancy(row.date);
-                    
-                    // Header Updated: No Bold, No Weekday
                     groupDiv.innerHTML = `<div class="date-header"><span>${displayDate}</span></div>`;
                 }
 
@@ -605,22 +752,21 @@
                 const item = document.createElement('div');
                 item.className = 'event-item';
                 
-                let mapIconHtml = mapHtml ? `<div class="map-icon" onclick="this.nextElementSibling.classList.toggle('open')"><i class="fas fa-map-marked-alt"></i></div>` : '';
+                let mapIconHtml = mapHtml ? `<div class="map-icon" onclick="toggleMap(this)"><i class="fas fa-map-marked-alt"></i></div>` : '';
                 let mapEmbedHtml = mapHtml ? `<div class="map-embed">${mapHtml}</div>` : '';
 
                 item.innerHTML = `
                         <div class="ev-title">${row.eventname}</div>
                         <div class="ev-telugu">${te}</div>
-                        <div class="ev-detail"><i class="far fa-clock"></i> ${row.time}</div>
-                        <div class="ev-detail"><i class="fas fa-map-marker-alt"></i> ${row.locationname||row.location}</div>
+                        <div class="ev-detail">${row.time}</div>
+                        <div class="ev-detail location-row"><span>${row.locationname||row.location}</span>${mapIconHtml}</div>
                         ${row.dresscode ? `<div class="ev-detail"><i class="fas fa-tshirt"></i> ${row.dresscode}</div>` : ''}
-                        
-                        ${mapIconHtml}
                         ${mapEmbedHtml}
                 `;
                 groupDiv.appendChild(item);
             });
             if(groupDiv) container.appendChild(groupDiv);
+            updateActiveScene(); 
         }
 
         const target = new Date('February 25, 2026 22:30:00').getTime();
