@@ -447,8 +447,8 @@
             </div>
 
             <div id="scene-entry" class="scene scene-entry">
-                <img src="assets/bride_entry.gif" class="person right" alt="Bride" onerror="this.src='assets/bride_entry.png'">
-                <img src="assets/groom_entry.gif" class="person left" alt="Groom" onerror="this.src='assets/groom_entry.png'">
+                <img src="assets/bride_entry.png" class="person right" alt="Bride" onerror="this.src='assets/bride_entry.png'">
+                <img src="assets/groom_entry.png" class="person left" alt="Groom" onerror="this.src='assets/groom_entry.png'">
             </div>
 
             <div id="scene-haldi"  class="scene scene-entry">
@@ -726,11 +726,23 @@
                 const isWedding = (row.iswedding||'').toLowerCase() === 'true';
                 
                 let mapHtml = '';
+                // 1. Check if the spreadsheet has a specific manual link (e.g. from Share -> Embed Map)
                 if(row.maplink && row.maplink.trim() !== '') {
-                    if(row.maplink.includes('<iframe')) { mapHtml = row.maplink; } else { mapHtml = `<iframe loading="lazy" src="${row.maplink}"></iframe>`; }
+                    if(row.maplink.includes('<iframe')) { 
+                        // If user pasted full iframe code, use it but force HTTPS
+                        mapHtml = row.maplink.replace('http:', 'https:'); 
+                    } else { 
+                        // If user pasted a short link, put it in iframe
+                        mapHtml = `<iframe loading="lazy" src="${row.maplink}"></iframe>`; 
+                    }
                 } else {
+                    // 2. Fallback: Generate a map based on location name
                     let loc = row.locationname || row.location;
-                    if(loc) { let safeLoc = encodeURIComponent(loc); mapHtml = `<iframe loading="lazy" src="https://maps.google.com/maps?q=${safeLoc}&output=embed"></iframe>`; }
+                    if(loc) { 
+                        let safeLoc = encodeURIComponent(loc); 
+                        // UPDATED: Use the standard HTTPS maps embed format
+                        mapHtml = `<iframe loading="lazy" frameborder="0" style="border:0" src="https://maps.google.com/maps?q=${safeLoc}&t=&z=15&ie=UTF8&iwloc=&output=embed"></iframe>`; 
+                    }
                 }
 
                 if(row.date !== lastDate) {
@@ -738,11 +750,7 @@
                     dateCount++;
                     if(groupDiv) container.appendChild(groupDiv);
                     groupDiv = document.createElement('div');
-                    // Add card-1, card-2, etc. class
                     groupDiv.className = `date-card ${isWedding?'wedding':''} card-${dateCount}`;
-                    
-                    // REMOVED INLINE JS BG - now handled by CSS classes for overlay
-                    // groupDiv.style.backgroundImage = `url('assets/card_bg_${dateCount}.png')`;
                     
                     let displayDate = formatDateFancy(row.date);
                     groupDiv.innerHTML = `<div class="date-header"><span>${displayDate}</span></div>`;
@@ -752,6 +760,7 @@
                 const item = document.createElement('div');
                 item.className = 'event-item';
                 
+                // Only show map icon if we successfully created mapHtml
                 let mapIconHtml = mapHtml ? `<div class="map-icon" onclick="toggleMap(this)"><i class="fas fa-map-marked-alt"></i></div>` : '';
                 let mapEmbedHtml = mapHtml ? `<div class="map-embed">${mapHtml}</div>` : '';
 
