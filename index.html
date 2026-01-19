@@ -567,8 +567,8 @@
             }
         }
 
-        const RAW_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR-0_JwNP5TLQgQM3P6oWpzB8cgb2VrbYOB_Hf1bHu1twH-1bVPNQxNY3-vf8nUuoLXr1J7TXhtB2QG/pub?output=csv';
-        const SHEET_URL = 'https://corsproxy.io/?' + encodeURIComponent(RAW_SHEET_URL + '&t=' + Date.now());
+        // --- POINT TO LOCAL FILE ---
+        const CSV_FILE_PATH = 'assets/events.csv';
 
         let opened = false;
         let autoTimer;
@@ -610,7 +610,6 @@
             }, 100); 
         }
 
-        /* --- CENTER-POINT CHECK FOR AUTO-SCROLL SYNC --- */
         function updateActiveScene() {
             const scenes = {
                 'default': document.getElementById('scene-elephants'),
@@ -629,7 +628,6 @@
             
             let activeType = 'default'; 
 
-            // 0. Check Umbrella Visibility
             if (scheduleStart && hangingDecor) {
                 const scheduleRect = scheduleStart.getBoundingClientRect();
                 if (scheduleRect.top < window.innerHeight * 0.8) {
@@ -639,12 +637,10 @@
                 }
             }
 
-            // 1. Check Thank You Card First
             const tyRect = thankyouCard.getBoundingClientRect();
             if (tyRect.top < window.innerHeight && tyRect.bottom > 0) {
                 activeType = 'thankyou';
             } else {
-                // 2. Find which card is closest to center
                 let closestDist = Infinity;
                 let closestCard = null;
 
@@ -708,11 +704,14 @@
         const getOrdinalNum = (n) => n + (["st","nd","rd"][((n+90)%100-10)%10-1]||"th");
         function formatDateFancy(dateStr) { const d = new Date(dateStr); if(isNaN(d)) return dateStr; return `${d.toLocaleString('default', {month:'short'})} ${getOrdinalNum(d.getDate())}, ${d.getFullYear()}`; }
 
-        Papa.parse(SHEET_URL, {
-            download: true, header: true,
+        // --- FETCH LOCAL CSV ---
+        Papa.parse(CSV_FILE_PATH, {
+            download: true, 
+            header: true,
+            skipEmptyLines: true,
             transformHeader: h => h.trim().replace(/\s/g, '').toLowerCase(),
             complete: res => renderEvents(res.data),
-            error: () => Papa.parse(RAW_SHEET_URL, { download: true, header: true, complete: res => renderEvents(res.data) })
+            error: (err) => console.error("Error loading CSV:", err)
         });
 
         function renderEvents(data) {
@@ -726,22 +725,23 @@
                 const isWedding = (row.iswedding||'').toLowerCase() === 'true';
                 
                 let mapHtml = '';
-                // 1. Check if the spreadsheet has a specific manual link (e.g. from Share -> Embed Map)
+                
+                // --- ROBUST MAP HANDLING ---
                 if(row.maplink && row.maplink.trim() !== '') {
-                    if(row.maplink.includes('<iframe')) { 
-                        // If user pasted full iframe code, use it but force HTTPS
+                    // Case 1: User pasted a full <iframe...> code
+                    if(row.maplink.includes('<iframe')) {
                         mapHtml = row.maplink.replace('http:', 'https:'); 
-                    } else { 
-                        // If user pasted a short link, put it in iframe
+                    } 
+                    // Case 2: User pasted a normal link (https://maps.app.goo.gl/...)
+                    else {
                         mapHtml = `<iframe loading="lazy" src="${row.maplink}"></iframe>`; 
                     }
                 } else {
-                    // 2. Fallback: Generate a map based on location name
+                    // Case 3: No link, generate one from Location Name
                     let loc = row.locationname || row.location;
                     if(loc) { 
-                        let safeLoc = encodeURIComponent(loc); 
-                        // UPDATED: Use the standard HTTPS maps embed format
-                        mapHtml = `<iframe loading="lazy" frameborder="0" style="border:0" src="https://maps.google.com/maps?q=${safeLoc}&t=&z=15&ie=UTF8&iwloc=&output=embed"></iframe>`; 
+                        let safeLoc = encodeURIComponent(loc);
+                        mapHtml = `<iframe loading="lazy" frameborder="0" style="border:0" src="https://maps.google.com/maps?q=${safeLoc}&t=&z=13&ie=UTF8&iwloc=&output=embed"></iframe>`; 
                     }
                 }
 
@@ -760,7 +760,6 @@
                 const item = document.createElement('div');
                 item.className = 'event-item';
                 
-                // Only show map icon if we successfully created mapHtml
                 let mapIconHtml = mapHtml ? `<div class="map-icon" onclick="toggleMap(this)"><i class="fas fa-map-marked-alt"></i></div>` : '';
                 let mapEmbedHtml = mapHtml ? `<div class="map-embed">${mapHtml}</div>` : '';
 
