@@ -45,9 +45,25 @@
             margin: 0; padding: 0;
             font-family: 'Montserrat', sans-serif;
             background-color: #000; 
-            background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('assets/background.jpg'); 
+            /* REMOVED the gradient from here. Only the image remains. */
+            background-image: url('assets/background.jpg'); 
             background-size: cover; background-position: center; background-attachment: fixed;
             color: var(--card-text); min-height: 100vh; overflow-x: hidden;
+        }
+
+        /* NEW: A separate layer for the dark tint */
+        #global-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8); /* Starts Dark (0.8) */
+            z-index: 0; /* Sits above body image, but behind content */
+            pointer-events: none; /* Lets clicks pass through */
+            transition: background-color 2.5s ease; /* Slow, smooth fade */
+        }
+
+        /* The class we will add via JS to make it clear */
+        #global-overlay.clear-view {
+            background: rgba(0, 0, 0, 0.1); /* Becomes Clear (0.1) */
         }
 
         /* --- 1. OPENING LAYER --- */
@@ -413,7 +429,8 @@
     </style>
 </head>
 <body>
-
+    <div id="global-overlay"></div>
+    
     <div class="music-fab" id="musicBtn" onclick="toggleMusic()"><i class="fas fa-music"></i></div>
 
     <div id="opening-layer" onclick="openInvitation()">
@@ -678,6 +695,19 @@
                     scenes[key].classList.remove('active');
                 }
             });
+            // --- NEW: BACKGROUND TRANSPARENCY LOGIC ---
+            const footer = document.querySelector('.footer');
+            const overlay = document.getElementById('global-overlay');
+            
+            if (footer && overlay) {
+                const footerRect = footer.getBoundingClientRect();
+                // If the top of the footer is visible in the viewport window
+                if (footerRect.top < window.innerHeight) {
+                    overlay.classList.add('clear-view'); // Fade out darkness
+                } else {
+                    overlay.classList.remove('clear-view'); // Bring back darkness
+                }
+            }
         }
 
         const audio = new Audio('assets/song.mp3');
